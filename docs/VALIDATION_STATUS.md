@@ -5,7 +5,10 @@ Machine: Intel i7-8850H, 32 GB RAM, NVIDIA Quadro P600 4 GB, Windows 10 19045
 Runtime: Ollama 0.32.9  
 Models: `qwen3.5:4b-q4_K_M` (`2a654d98e6fb…`) and `qwen3-embedding:0.6b` (`ac6da0dfba84…`)
 
-This is the only current verdict. It is not an acceptance result: the locked 60-case corpus has zero approved labels and all 50 fixture files are absent.
+This is the only current MVP verdict. It is not an acceptance result. Phase 6D now has a structurally
+complete draft corpus with all 50 primary fixtures, ten independent contradiction companions, stable
+source hashes, and resolvable evidence anchors. Human approval remains 0/60, so no locked corpus exists
+and Phase 6E is blocked.
 
 ## Evidence collected
 
@@ -26,7 +29,7 @@ Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z
 
 | Gate | Exact evidence | Classification | Smallest next action |
 |---|---|---|---|
-| Locked normal-RAG vs CRAG comparison | 0/60 cases approved; 50/50 fixtures missing | Evaluation | A bilingual reviewer must approve exact fixtures, dispositions, claims, and evidence anchors before the one-time run. |
+| Locked normal-RAG vs CRAG comparison | 0/60 cases approved; 60/60 physical sources present and structurally valid | Evaluation | A bilingual reviewer must approve all cases and an independent adjudicator must complete the 40 mandatory safety adjudications before locking. |
 | Verifier safety | No blinded human claim labels exist, so false-SUPPORTED rate cannot be established | Evaluation | Complete claim-level bilingual review and second-adjudicator review for disputed safety cases. |
 | Correction effectiveness | Provisional EN improved; provisional AR did not trigger and failed Recall@6 | Model/retrieval | On a new calibration case, inspect Arabic grader semantics and one Arabic rewrite prompt; do not alter release safety rules. |
 | Target-machine GPU viability | 4B GPU warm-up crashed with `0xc0000005` | Runtime/hardware | Test a pinned newer Ollama build or llama.cpp with the same GGUF; retain CPU-only as the stable control. |

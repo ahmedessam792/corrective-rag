@@ -16,15 +16,62 @@ Passing deterministic tests or the calibration corpus is not an MVP validation r
 .venv\Scripts\python.exe evaluation\build_calibration_fixtures.py
 ```
 
-`pilot_cases.jsonl` reserves the balanced 60-case acceptance set. It is currently blocked: all fixture documents and human anchors are missing. Do not change its labels to `approved` until a bilingual reviewer has checked the exact evidence and expected disposition. A disputed safety-critical label also needs an adjudicator.
+`pilot_cases.jsonl` preserves the original balanced 60-case definition. Phase 6D materializes it under
+`corpora/crag-gold-v1-draft/` as 60 draft cases and 60 physical sources (50 primary fixtures plus ten
+independent contradiction companions). The draft is structurally complete, but no proposed label or
+anchor is approved truth until the accountable human records are applied.
 
-Each approved case must include:
+Each approved versioned case includes:
 
-- `expected_disposition`: `answered`, `partial`, `refused`, or `conflicting`;
-- exact `gold_evidence` text anchors, optional page/paragraph anchors, and graded relevance;
-- atomic `gold_claims`, including unsupported portions for partial cases;
-- `reviewer`, plus `adjudicator` when required;
-- every required fixture in the selected fixture directory.
+- one outcome: `SUPPORTED`, `PARTIAL`, `INSUFFICIENT`, or `CONTRADICTORY`;
+- stable source IDs and exact normalized evidence passages with source location and passage SHA-256;
+- atomic claims, including absent portions for partial cases and conflicted claims for contradictions;
+- an explicit correction-required decision with bridge and target anchors where applicable;
+- a bilingual primary review, plus independent adjudication for every partial, insufficient,
+  contradictory, and prompt-injection case and for any other disputed or uncertain case;
+- source provenance, binary SHA-256, and every physical fixture.
+
+## Phase 6D corpus workflow
+
+Rebuild the draft from the frozen 60-case definition:
+
+```powershell
+.venv\Scripts\python.exe evaluation\build_gold_corpus.py
+```
+
+The generated `runtime_cases.jsonl` contains only opaque case IDs, questions, and source references.
+Expected outcomes, claims, anchors, correction labels, reviews, and notes remain in evaluator-only files.
+
+Audit the draft:
+
+```powershell
+.venv\Scripts\python.exe validate.py corpus-audit
+```
+
+The expected pre-review verdict is `Corpus complete but human approval pending`. Reviewers must inspect
+the rendered files, then complete copies of `reviews.template.jsonl` and
+`adjudications.template.jsonl`. Template placeholders are intentionally invalid and cannot be applied.
+
+Apply accountable review records and regenerate the runtime boundary:
+
+```powershell
+.venv\Scripts\python.exe validate.py corpus-apply-reviews `
+  --reviews PATH_TO_COMPLETED_REVIEWS.jsonl `
+  --adjudications PATH_TO_COMPLETED_ADJUDICATIONS.jsonl
+.venv\Scripts\python.exe validate.py corpus-compile
+```
+
+Lock only after all 60 cases are approved and all mandatory adjudications are complete:
+
+```powershell
+.venv\Scripts\python.exe validate.py corpus-lock `
+  --output evaluation\corpora\crag-gold-v1
+.venv\Scripts\python.exe validate.py corpus-verify-lock `
+  --corpus evaluation\corpora\crag-gold-v1
+```
+
+Locking never overwrites an existing directory. Any legitimate post-lock change requires a new version;
+previous locked versions stay intact. Do not run the final benchmark against the draft corpus.
 
 Audit readiness:
 

@@ -23,6 +23,13 @@ import httpx
 from pydantic import BaseModel, Field
 
 from crag.config import Settings
+from crag.corpus import (
+    apply_review_records,
+    audit_corpus,
+    compile_runtime_manifest,
+    lock_corpus,
+    verify_locked_corpus,
+)
 from crag.database import Database
 from crag.domain import AnswerResult, Citation, Claim
 from crag.evaluation import BenchmarkCase, audit_manifest, correction_metrics, load_manifest, retrieval_metrics
@@ -993,6 +1000,36 @@ def _report_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _corpus_audit_command(args: argparse.Namespace) -> int:
+    audit = audit_corpus(args.corpus)
+    print(json.dumps(audit.model_dump(), ensure_ascii=False, indent=2))
+    return 0 if audit.benchmark_ready else 2
+
+
+def _corpus_compile_command(args: argparse.Namespace) -> int:
+    output = compile_runtime_manifest(args.corpus)
+    audit = audit_corpus(args.corpus, verify_lock=False)
+    print(json.dumps({"runtime_manifest": str(output), "audit": audit.model_dump()}, ensure_ascii=False, indent=2))
+    return 0 if not audit.integrity_errors and not audit.missing_sources else 2
+
+
+def _corpus_lock_command(args: argparse.Namespace) -> int:
+    print(lock_corpus(args.corpus, args.output))
+    return 0
+
+
+def _corpus_apply_reviews_command(args: argparse.Namespace) -> int:
+    audit = apply_review_records(args.corpus, args.reviews, args.adjudications)
+    print(json.dumps(audit.model_dump(), ensure_ascii=False, indent=2))
+    return 0 if not audit.integrity_errors and not audit.case_errors else 2
+
+
+def _corpus_verify_lock_command(args: argparse.Namespace) -> int:
+    errors = verify_locked_corpus(args.corpus)
+    print(json.dumps({"valid": not errors, "errors": errors}, ensure_ascii=False, indent=2))
+    return 0 if not errors else 2
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Local CRAG validation harness")
     commands = result.add_subparsers(dest="command", required=True)
@@ -1013,6 +1050,28 @@ def parser() -> argparse.ArgumentParser:
     report.add_argument("--judgments", type=Path, required=True)
     report.add_argument("--operational", type=Path, required=True)
     report.set_defaults(handler=_report_command)
+    corpus_audit = commands.add_parser("corpus-audit", help="Validate a versioned gold corpus")
+    corpus_audit.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1-draft"))
+    corpus_audit.set_defaults(handler=_corpus_audit_command)
+    corpus_compile = commands.add_parser(
+        "corpus-compile", help="Generate the gold-free runtime manifest and validate its boundary"
+    )
+    corpus_compile.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1-draft"))
+    corpus_compile.set_defaults(handler=_corpus_compile_command)
+    corpus_lock = commands.add_parser("corpus-lock", help="Create an immutable corpus release")
+    corpus_lock.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1-draft"))
+    corpus_lock.add_argument("--output", type=Path, required=True)
+    corpus_lock.set_defaults(handler=_corpus_lock_command)
+    corpus_reviews = commands.add_parser(
+        "corpus-apply-reviews", help="Apply accountable human review and adjudication records"
+    )
+    corpus_reviews.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1-draft"))
+    corpus_reviews.add_argument("--reviews", type=Path, required=True)
+    corpus_reviews.add_argument("--adjudications", type=Path)
+    corpus_reviews.set_defaults(handler=_corpus_apply_reviews_command)
+    corpus_verify = commands.add_parser("corpus-verify-lock", help="Verify a locked corpus checksum set")
+    corpus_verify.add_argument("--corpus", type=Path, required=True)
+    corpus_verify.set_defaults(handler=_corpus_verify_lock_command)
     return result
 
 
