@@ -20,7 +20,7 @@ This is the only current verdict. It is not an acceptance result: the locked 60-
 - Deterministic safety and contract tests pass: 17 backend tests, including conflicting claim rejection, fabricated citations, bounded schema repair, active-stage cancellation, restart reconciliation, prompt isolation, and manifest gating.
 - Frontend type checking, one browser test, and the production build pass.
 
-Raw local artifacts are under ignored `.evaluation-runs/`, including valid runs `20260813T161839Z-8fdc7746` and `20260813T162939Z-48110574`.
+Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z-8fdc7746` is usable only for runtime smoke/resource evidence because its two cases shared a workspace. Run `20260813T162939Z-48110574` is the infrastructure-valid, case-isolated correction experiment.
 
 ## Failed or blocked gates
 
