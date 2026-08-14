@@ -1,0 +1,549 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "primary",
+  "batch_id": "primary-01-answerable",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "cases": [
+    {
+      "case_id": "ar-answerable-01",
+      "language": "ar",
+      "category": "answerable",
+      "question": "ما القرار الذي تسمح به السياسة؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-answerable-01-claim-1",
+            "text": "يجوز لرؤساء الإدارات الموافقة على العمل عن بعد لمدة لا تتجاوز يومين أسبوعياً.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-answerable-01-ev-support",
+            "source_id": "src-ar-policy-a-v1",
+            "role": "necessary",
+            "exact_text": "تسمح السياسة لرؤساء الإدارات بالموافقة على العمل عن بعد لمدة لا تتجاوز يومين أسبوعياً.",
+            "normalized_text_sha256": "b648d63201656714b6cec3611ec6d0e1f184dd162f3a87ae62f8a5ea84c6d747",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 127,
+              "char_end": 213
+            },
+            "claim_ids": [
+              "ar-answerable-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-policy-a-v1",
+          "title": "سياسة العمل المرن",
+          "relative_path": "fixtures/ar-policy-a.pdf",
+          "document_version": "1.0",
+          "sha256": "aab21646c8e263d5e289e401e4979134d22b3c625bca8de88fbbb3317682c74f"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-answerable-02",
+      "language": "ar",
+      "category": "answerable",
+      "question": "ما التاريخ المذكور في التقرير؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-answerable-02-claim-1",
+            "text": "يحدد التقرير تاريخ الثلاثين من يونيو عام ألفين وخمسة وعشرين.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-answerable-02-ev-support",
+            "source_id": "src-ar-report-a-v1",
+            "role": "necessary",
+            "exact_text": "انتهت فترة التقرير في الثلاثين من يونيو عام ألفين وخمسة وعشرين.",
+            "normalized_text_sha256": "de2fe300ac1f5f2b299f01c3152d0488ce12193cc9c0c5adebcfded77f7a629c",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 4,
+              "paragraph_end": 4,
+              "char_start": 0,
+              "char_end": 63
+            },
+            "claim_ids": [
+              "ar-answerable-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-report-a-v1",
+          "title": "تقرير العمليات ربع السنوي",
+          "relative_path": "fixtures/ar-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "f8401cfaf9b2a36e2a9ac93f5770aa87e460a8336e4af5c866b9243e681a3dee"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-answerable-03",
+      "language": "ar",
+      "category": "answerable",
+      "question": "ما القيد الذي توضحه الدراسة؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-answerable-03-claim-1",
+            "text": "جُمعت جميع الملاحظات من مستشفى واحد فقط.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-answerable-03-ev-support",
+            "source_id": "src-ar-study-a-v1",
+            "role": "necessary",
+            "exact_text": "يتمثل القيد الرئيس في أن جميع الملاحظات جُمعت من مستشفى واحد فقط.",
+            "normalized_text_sha256": "a1f83374fb2308c46b95e3356cdcd45e20d9e28ab0e7196e10b2b68deda24620",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 133,
+              "char_end": 198
+            },
+            "claim_ids": [
+              "ar-answerable-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-study-a-v1",
+          "title": "دراسة سير العمل السريري",
+          "relative_path": "fixtures/ar-study-a.pdf",
+          "document_version": "1.0",
+          "sha256": "40b1c84029a26d611875f9ddc1314485030ff9c7e22a2638d1899d6457c50377"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-answerable-04",
+      "language": "ar",
+      "category": "answerable",
+      "question": "من المسؤول عن الإجراء الموثق؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-answerable-04-claim-1",
+            "text": "مكتب ضمان الجودة هو المسؤول عن الإجراء.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-answerable-04-ev-support",
+            "source_id": "src-ar-process-a-v1",
+            "role": "necessary",
+            "exact_text": "يتولى مكتب ضمان الجودة مسؤولية إجراء المراجعة الموثق.",
+            "normalized_text_sha256": "a7d4f032a792ecc73ebabb582ae24320f198cce8a6d62115c14a9cbec160b265",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 4,
+              "paragraph_end": 4,
+              "char_start": 0,
+              "char_end": 53
+            },
+            "claim_ids": [
+              "ar-answerable-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-process-a-v1",
+          "title": "إجراء مراجعة التغيير",
+          "relative_path": "fixtures/ar-process-a.docx",
+          "document_version": "1.0",
+          "sha256": "01714e15e6b19a4f52790271310b1f5a6f9f2f9897a8c94986de0ccdceb757d3"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-answerable-05",
+      "language": "ar",
+      "category": "answerable",
+      "question": "ما الحد المذكور في المصدر؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-answerable-05-claim-1",
+            "text": "الحد هو خمسة وثمانون في المئة.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-answerable-05-ev-support",
+            "source_id": "src-ar-technical-a-v1",
+            "role": "necessary",
+            "exact_text": "يلزم التصعيد عندما تنخفض درجة الموثوقية عن خمسة وثمانين في المئة.",
+            "normalized_text_sha256": "e7d751cad076a33774b57c0163838f3ce653279f6e44013b2926d8a20b5c9ca9",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 117,
+              "char_end": 182
+            },
+            "claim_ids": [
+              "ar-answerable-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-technical-a-v1",
+          "title": "معيار موثوقية الخدمة",
+          "relative_path": "fixtures/ar-technical-a.pdf",
+          "document_version": "1.0",
+          "sha256": "b1c2f7626370a3f72a94b8e0182c2296303ce8ecaa9a876d55620764fb99346c"
+        }
+      ]
+    },
+    {
+      "case_id": "en-answerable-01",
+      "language": "en",
+      "category": "answerable",
+      "question": "What decision does the policy authorize?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-answerable-01-claim-1",
+            "text": "Department heads may approve remote work for up to two days per week.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-answerable-01-ev-support",
+            "source_id": "src-en-policy-a-v1",
+            "role": "necessary",
+            "exact_text": "The policy authorizes department heads to approve remote work for up to two days per week.",
+            "normalized_text_sha256": "cd48b9c4917d0f9cf9a9fbc960acc019d6de5fe9abf566dfafe20421cd1b71dc",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 150,
+              "char_end": 240
+            },
+            "claim_ids": [
+              "en-answerable-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-policy-a-v1",
+          "title": "Flexible Work Policy",
+          "relative_path": "fixtures/en-policy-a.pdf",
+          "document_version": "1.0",
+          "sha256": "3494a51282883250be8e19b1f5744660e28343a110eab7f0f930f41e98dd3672"
+        }
+      ]
+    },
+    {
+      "case_id": "en-answerable-02",
+      "language": "en",
+      "category": "answerable",
+      "question": "Which date does the report identify?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-answerable-02-claim-1",
+            "text": "The report identifies 30 June 2025.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-answerable-02-ev-support",
+            "source_id": "src-en-report-a-v1",
+            "role": "necessary",
+            "exact_text": "The reporting period closed on 30 June 2025.",
+            "normalized_text_sha256": "7275c081f0c70ccda5bf35cdae9a8a20f9ec72b535d19ee4f2b65d7a5b3f0c7e",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 4,
+              "paragraph_end": 4,
+              "char_start": 0,
+              "char_end": 44
+            },
+            "claim_ids": [
+              "en-answerable-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-report-a-v1",
+          "title": "Quarterly Operations Report",
+          "relative_path": "fixtures/en-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "363278656ce67ad1a769377227a6bff7df3637428b97cb4cbc23324a9902310f"
+        }
+      ]
+    },
+    {
+      "case_id": "en-answerable-03",
+      "language": "en",
+      "category": "answerable",
+      "question": "What limitation does the study report?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-answerable-03-claim-1",
+            "text": "All observations came from a single hospital.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-answerable-03-ev-support",
+            "source_id": "src-en-study-a-v1",
+            "role": "necessary",
+            "exact_text": "The principal limitation is that all observations came from a single hospital.",
+            "normalized_text_sha256": "f9a8d0b86c354eb0179406802fcf6a227babe835fce487a7f68150f60499cb5b",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 156,
+              "char_end": 234
+            },
+            "claim_ids": [
+              "en-answerable-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-study-a-v1",
+          "title": "Clinical Workflow Study",
+          "relative_path": "fixtures/en-study-a.pdf",
+          "document_version": "1.0",
+          "sha256": "b950177f2fa41fb8f1976c7b28837243df8585e4df8da273da7415d349d63840"
+        }
+      ]
+    },
+    {
+      "case_id": "en-answerable-04",
+      "language": "en",
+      "category": "answerable",
+      "question": "Who owns the documented process?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-answerable-04-claim-1",
+            "text": "The Quality Assurance Office owns the process.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-answerable-04-ev-support",
+            "source_id": "src-en-process-a-v1",
+            "role": "necessary",
+            "exact_text": "The Quality Assurance Office owns the documented review process.",
+            "normalized_text_sha256": "c0535afbdd55c038ef3b5efa31b36d6229458dd089d6c05f077ca1b4ed158564",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 4,
+              "paragraph_end": 4,
+              "char_start": 0,
+              "char_end": 64
+            },
+            "claim_ids": [
+              "en-answerable-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-process-a-v1",
+          "title": "Change Review Procedure",
+          "relative_path": "fixtures/en-process-a.docx",
+          "document_version": "1.0",
+          "sha256": "ea2ab538b6ddc48c08615627b539a07235007fd03a2312c5d49702a6490995a7"
+        }
+      ]
+    },
+    {
+      "case_id": "en-answerable-05",
+      "language": "en",
+      "category": "answerable",
+      "question": "What threshold appears in the source?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-answerable-05-claim-1",
+            "text": "The threshold is 85 percent.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-answerable-05-ev-support",
+            "source_id": "src-en-technical-a-v1",
+            "role": "necessary",
+            "exact_text": "Escalation is required when the reliability score falls below 85 percent.",
+            "normalized_text_sha256": "93f50dc062c68fdbcbc42feb453d2a090983f29838499ffc0007353a812cc39b",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 159,
+              "char_end": 232
+            },
+            "claim_ids": [
+              "en-answerable-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-technical-a-v1",
+          "title": "Service Reliability Standard",
+          "relative_path": "fixtures/en-technical-a.pdf",
+          "document_version": "1.0",
+          "sha256": "86224de07cb4a5ee96b9b15e32c7f7b47ff2ba061b01fd79e42849a4b941d6b3"
+        }
+      ]
+    }
+  ]
+}

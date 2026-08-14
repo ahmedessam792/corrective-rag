@@ -11,6 +11,12 @@ Review source files before comparing the proposed evaluator metadata. If the sou
 ambiguous, inaccessible, or does not create the intended condition, return the case to draft and revise
 the source specification. Rebuild and repeat review after any source change.
 
+Generate the primary packets with `validate.py corpus-prepare-review-batches --stage primary`. There are
+six bilingual batches of ten cases, one batch per frozen category. Review the English and Arabic cases in
+each batch directly against their linked fixtures and complete the companion JSONL response template.
+The proposed values remain visible so amendments can be recorded explicitly; they are never implicit
+approval. Preserve every completed primary record even when the decision is `changes_required`.
+
 ## Outcome rules
 
 - `SUPPORTED`: all material answer components are directly supported by necessary or legitimate
@@ -35,6 +41,12 @@ A second person with a different stable identifier adjudicates all `PARTIAL`, `I
 any requested label change, ambiguous citation support, or a `SUPPORTED` versus `INSUFFICIENT` dispute.
 The adjudicator records the original outcome, dispute or mandatory-safety reason, final outcome, final
 anchors, correction decision, and notes. Original review records are preserved.
+
+Only after primary records are applied, generate the second-review packets with
+`validate.py corpus-prepare-review-batches --stage adjudication`. The command refuses missing primary
+records and unresolved `changes_required` cases. The adjudicator packet includes the original primary
+record, but the second reviewer must still inspect the source independently and use a different stable
+human identifier.
 
 ## Approval and leakage
 

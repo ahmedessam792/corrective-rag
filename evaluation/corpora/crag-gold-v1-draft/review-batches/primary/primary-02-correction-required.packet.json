@@ -1,0 +1,797 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "primary",
+  "batch_id": "primary-02-correction-required",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "cases": [
+    {
+      "case_id": "ar-correction-01",
+      "language": "ar",
+      "category": "correction_required",
+      "question": "ما الاستثناء الذي يغير القاعدة العامة؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.",
+        "correction_bridge_anchor_ids": [
+          "ar-correction-01-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "ar-correction-01-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-correction-01-claim-1",
+            "text": "يسمح بند استمرارية الخدمة العاجلة بالشراء الفوري دون ثلاثة عروض عندما يهدد التأخير استمرارية الخدمة.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-correction-01-ev-bridge",
+            "source_id": "src-ar-policy-b-v1",
+            "role": "bridge",
+            "exact_text": "يحمل استثناء الاستجابة للطوارئ الاسم الرسمي بند استمرارية الخدمة العاجلة ويُختصر إلى بسا.",
+            "normalized_text_sha256": "ed4193534fcdb01c32a918f75b46e3ed7e9b21e9d4df6017f2c65b15aa3d76f3",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 69,
+              "char_end": 158
+            },
+            "claim_ids": [
+              "ar-correction-01-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-correction-01-ev-target",
+            "source_id": "src-ar-policy-b-v1",
+            "role": "necessary",
+            "exact_text": "بموجب بسا، يجوز لقائد الحادث اعتماد شراء فوري دون ثلاثة عروض إذا كان التأخير يهدد استمرارية الخدمة.",
+            "normalized_text_sha256": "7bf904263f14bdb84f21d985ae52d54d1a22db7a8e744ee76ea77ae444c15ddd",
+            "relevance": 3,
+            "locator": {
+              "page": 6,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 1572,
+              "char_end": 1671
+            },
+            "claim_ids": [
+              "ar-correction-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-policy-b-v1",
+          "title": "دليل استثناءات المشتريات",
+          "relative_path": "fixtures/ar-policy-b.pdf",
+          "document_version": "1.0",
+          "sha256": "ef34963784cc0ab5ac7fec69f46f5cb3024ee15d60bf75860502bba7564848dc"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-correction-02",
+      "language": "ar",
+      "category": "correction_required",
+      "question": "كيف يصف المصدر المصطلح القديم الآن؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.",
+        "correction_bridge_anchor_ids": [
+          "ar-correction-02-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "ar-correction-02-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-correction-02-claim-1",
+            "text": "أصبح المصطلح القديم الدفتر الأزرق يُسمى الآن سجل الحالات.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-correction-02-ev-bridge",
+            "source_id": "src-ar-glossary-a-v1",
+            "role": "bridge",
+            "exact_text": "يشير المصطلح القديم الدفتر الأزرق الآن إلى سجل الحالات.",
+            "normalized_text_sha256": "f5233d23ca1e1bad36a77bd31724a0d8b213303a90122b890acb2a949c7d2a7f",
+            "relevance": 2,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "جسر المصطلحات"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 55
+            },
+            "claim_ids": [
+              "ar-correction-02-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-correction-02-ev-target",
+            "source_id": "src-ar-glossary-a-v1",
+            "role": "necessary",
+            "exact_text": "سجل الحالات هو السجل المعتمد حالياً للحالات الخدمية المفتوحة.",
+            "normalized_text_sha256": "c2697abf3986c6b49ddf56ac01543c99e60a75dd3d46f44e079828671678fad3",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 33,
+              "paragraph_end": 33,
+              "char_start": 0,
+              "char_end": 61
+            },
+            "claim_ids": [
+              "ar-correction-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-glossary-a-v1",
+          "title": "سجل مصطلحات السجلات",
+          "relative_path": "fixtures/ar-glossary-a.docx",
+          "document_version": "1.0",
+          "sha256": "1b64ebc5b3aae42669fbfb10e018ac52cee39e65f2fb2641eb6cd274e56c95b1"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-correction-03",
+      "language": "ar",
+      "category": "correction_required",
+      "question": "ما الدليل الذي يوضح الاختصار؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.",
+        "correction_bridge_anchor_ids": [
+          "ar-correction-03-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "ar-correction-03-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-correction-03-claim-1",
+            "text": "يعني الاختصار ومغ وحدة المزامنة غير المتصلة التي تشفّر عمليات النقل المعلقة قبل التخزين المحلي.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-correction-03-ev-bridge",
+            "source_id": "src-ar-technical-b-v1",
+            "role": "bridge",
+            "exact_text": "يرمز الاختصار ومغ في هذه المواصفة إلى وحدة المزامنة غير المتصلة.",
+            "normalized_text_sha256": "c4d770f604768f15f586e3e372100308ec519ad66c7a6fd5b0d6dce38bd726a2",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 67,
+              "char_end": 131
+            },
+            "claim_ids": [
+              "ar-correction-03-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-correction-03-ev-target",
+            "source_id": "src-ar-technical-b-v1",
+            "role": "necessary",
+            "exact_text": "تُشفّر وحدة المزامنة غير المتصلة كل عملية نقل معلقة قبل التخزين المحلي.",
+            "normalized_text_sha256": "2ad4c3562bfb0888e2b6994d295ac6e2f92852a10198713c167322554a40b049",
+            "relevance": 3,
+            "locator": {
+              "page": 6,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 1549,
+              "char_end": 1620
+            },
+            "claim_ids": [
+              "ar-correction-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-technical-b-v1",
+          "title": "مواصفة النقل دون اتصال",
+          "relative_path": "fixtures/ar-technical-b.pdf",
+          "document_version": "1.0",
+          "sha256": "64366297350b32a16884900bdfd6f8ed514adcc1ff61d034184454c7bf0405e6"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-correction-04",
+      "language": "ar",
+      "category": "correction_required",
+      "question": "أي قسم يحتوي على الاسم التشغيلي؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.",
+        "correction_bridge_anchor_ids": [
+          "ar-correction-04-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "ar-correction-04-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-correction-04-claim-1",
+            "text": "يحتوي قسم عمليات التعافي على الاسم التشغيلي مكتب الاستمرارية.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-correction-04-ev-bridge",
+            "source_id": "src-ar-process-b-v1",
+            "role": "bridge",
+            "exact_text": "يتضمن قسم عمليات التعافي قواعد التسمية المعتمدة.",
+            "normalized_text_sha256": "c2959f2f83f1f61e961efb605d277fdce223bb8ac8e0d69fd5856469c3dfcac4",
+            "relevance": 2,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "جسر المصطلحات"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 48
+            },
+            "claim_ids": [
+              "ar-correction-04-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-correction-04-ev-target",
+            "source_id": "src-ar-process-b-v1",
+            "role": "necessary",
+            "exact_text": "ضمن قسم عمليات التعافي تعمل الوحدة باسم مكتب الاستمرارية.",
+            "normalized_text_sha256": "ed6a4e7db5dd8b23b5121f9641dcefa7f03585a0fdda7247b526957efcd5686d",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "عمليات التعافي"
+              ],
+              "paragraph_start": 33,
+              "paragraph_end": 33,
+              "char_start": 0,
+              "char_end": 57
+            },
+            "claim_ids": [
+              "ar-correction-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-process-b-v1",
+          "title": "إجراء تشغيل استمرارية الأعمال",
+          "relative_path": "fixtures/ar-process-b.docx",
+          "document_version": "1.0",
+          "sha256": "68468372b3f0c8e5946eebbe634de49052b957115d7efaf539c50c8fd2016a7f"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-correction-05",
+      "language": "ar",
+      "category": "correction_required",
+      "question": "ما المرادف الذي يحدد الضابط المطلوب؟",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.",
+        "correction_bridge_anchor_ids": [
+          "ar-correction-05-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "ar-correction-05-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-correction-05-claim-1",
+            "text": "تحدد الحيازة المزدوجة ضابط الشخصين المطلوب لتصدير مفاتيح الإنتاج.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-correction-05-ev-bridge",
+            "source_id": "src-ar-security-a-v1",
+            "role": "bridge",
+            "exact_text": "عبارة الحيازة المزدوجة هي المرادف المعتمد لضابط الشخصين.",
+            "normalized_text_sha256": "2981097ebb1222050f42ee060ddf4df6f8c0f82c73242073f241ee7eea038a21",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 64,
+              "char_end": 120
+            },
+            "claim_ids": [
+              "ar-correction-05-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-correction-05-ev-target",
+            "source_id": "src-ar-security-a-v1",
+            "role": "necessary",
+            "exact_text": "يلزم ضابط الشخصين عند تصدير أي مفتاح تشفير للإنتاج.",
+            "normalized_text_sha256": "a06cecd82c93e6693f9c20da4b562e0da3b302da143cea6dab6edb355146ec11",
+            "relevance": 3,
+            "locator": {
+              "page": 6,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 1557,
+              "char_end": 1608
+            },
+            "claim_ids": [
+              "ar-correction-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-security-a-v1",
+          "title": "ضابط مفاتيح التشفير",
+          "relative_path": "fixtures/ar-security-a.pdf",
+          "document_version": "1.0",
+          "sha256": "0ad8cf88e2bc806bed628d7dd2e3e4deee49c320b4a1ee14bd8c8db9a7625438"
+        }
+      ]
+    },
+    {
+      "case_id": "en-correction-01",
+      "language": "en",
+      "category": "correction_required",
+      "question": "Which exception changes the general rule?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.",
+        "correction_bridge_anchor_ids": [
+          "en-correction-01-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "en-correction-01-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-correction-01-claim-1",
+            "text": "The Rapid Continuity Clause permits an immediate purchase without three bids when delay threatens continuity.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-correction-01-ev-bridge",
+            "source_id": "src-en-policy-b-v1",
+            "role": "bridge",
+            "exact_text": "The emergency-response exception is formally titled the Rapid Continuity Clause (RCC).",
+            "normalized_text_sha256": "123fd562d17f768bdf9d6962e6dd87a34e79050ecd029481760fec036101866b",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 92,
+              "char_end": 178
+            },
+            "claim_ids": [
+              "en-correction-01-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-correction-01-ev-target",
+            "source_id": "src-en-policy-b-v1",
+            "role": "necessary",
+            "exact_text": "Under the RCC, an incident commander may authorize an immediate purchase without three bids when delay threatens service continuity.",
+            "normalized_text_sha256": "e43e3365ef5da5f92d0835f97df581a1512362ecadb22bd67378f7d061b11c99",
+            "relevance": 3,
+            "locator": {
+              "page": 9,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 768,
+              "char_end": 900
+            },
+            "claim_ids": [
+              "en-correction-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-policy-b-v1",
+          "title": "Procurement Exceptions Manual",
+          "relative_path": "fixtures/en-policy-b.pdf",
+          "document_version": "1.0",
+          "sha256": "a4824c0538a6d48db7a1912b1be5f940fd5ecd073d013ca3cb8b9b34f91e4c86"
+        }
+      ]
+    },
+    {
+      "case_id": "en-correction-02",
+      "language": "en",
+      "category": "correction_required",
+      "question": "How is the older term described now?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.",
+        "correction_bridge_anchor_ids": [
+          "en-correction-02-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "en-correction-02-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-correction-02-claim-1",
+            "text": "The older term Blue Ledger is now called the Case Register.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-correction-02-ev-bridge",
+            "source_id": "src-en-glossary-a-v1",
+            "role": "bridge",
+            "exact_text": "The former term Blue Ledger now refers to the Case Register.",
+            "normalized_text_sha256": "4d5c58cdbb533d09c76436e77eab2d0209844bb3e9a3d621064e0fb4a0fc158e",
+            "relevance": 2,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Terminology bridge"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 60
+            },
+            "claim_ids": [
+              "en-correction-02-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-correction-02-ev-target",
+            "source_id": "src-en-glossary-a-v1",
+            "role": "necessary",
+            "exact_text": "The Case Register is the current controlled record for open service cases.",
+            "normalized_text_sha256": "d3c118e64fd18f91424ee27d88c17ffef4967955cb16e65eb482923d8878c919",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 33,
+              "paragraph_end": 33,
+              "char_start": 0,
+              "char_end": 74
+            },
+            "claim_ids": [
+              "en-correction-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-glossary-a-v1",
+          "title": "Records Terminology Register",
+          "relative_path": "fixtures/en-glossary-a.docx",
+          "document_version": "1.0",
+          "sha256": "319ae6fd64918903753c9d5597f15457ef07c46c23bde340e1c5231f0b463f9b"
+        }
+      ]
+    },
+    {
+      "case_id": "en-correction-03",
+      "language": "en",
+      "category": "correction_required",
+      "question": "What evidence resolves the acronym?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.",
+        "correction_bridge_anchor_ids": [
+          "en-correction-03-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "en-correction-03-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-correction-03-claim-1",
+            "text": "OSM means Offline Sync Module, which encrypts queued transfers before local storage.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-correction-03-ev-bridge",
+            "source_id": "src-en-technical-b-v1",
+            "role": "bridge",
+            "exact_text": "In this specification, OSM expands to Offline Sync Module.",
+            "normalized_text_sha256": "4b1ed8c8f7df4df48d1196cf8cdcf6baaac8064290ebf62b5e73099003aa614e",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 93,
+              "char_end": 151
+            },
+            "claim_ids": [
+              "en-correction-03-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-correction-03-ev-target",
+            "source_id": "src-en-technical-b-v1",
+            "role": "necessary",
+            "exact_text": "The Offline Sync Module encrypts every queued transfer before local storage.",
+            "normalized_text_sha256": "4b4192717865768989fc33b1c08f18ae4d2fbc2dbd9ff24566735774669b7dda",
+            "relevance": 3,
+            "locator": {
+              "page": 9,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 0,
+              "char_end": 76
+            },
+            "claim_ids": [
+              "en-correction-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-technical-b-v1",
+          "title": "Offline Transfer Specification",
+          "relative_path": "fixtures/en-technical-b.pdf",
+          "document_version": "1.0",
+          "sha256": "e8e14be97c46f663e3fd482c226d7e0b8f5267907bec6d424208b7354a4d50db"
+        }
+      ]
+    },
+    {
+      "case_id": "en-correction-04",
+      "language": "en",
+      "category": "correction_required",
+      "question": "Which section contains the operational name?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.",
+        "correction_bridge_anchor_ids": [
+          "en-correction-04-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "en-correction-04-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-correction-04-claim-1",
+            "text": "The Recovery Operations section contains the operational name Continuity Desk.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-correction-04-ev-bridge",
+            "source_id": "src-en-process-b-v1",
+            "role": "bridge",
+            "exact_text": "The Recovery Operations section contains the controlled naming rules.",
+            "normalized_text_sha256": "09d32999db549dd761e1f9fed47bd88f30854f368d942164ddcff2dfcb64ccaf",
+            "relevance": 2,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Terminology bridge"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 69
+            },
+            "claim_ids": [
+              "en-correction-04-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-correction-04-ev-target",
+            "source_id": "src-en-process-b-v1",
+            "role": "necessary",
+            "exact_text": "Within Recovery Operations, the unit operates under the name Continuity Desk.",
+            "normalized_text_sha256": "fe38bff3856b04d1d895f07c1b201705c993d7e6065e358409cafa8b9b53751b",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Recovery Operations"
+              ],
+              "paragraph_start": 33,
+              "paragraph_end": 33,
+              "char_start": 0,
+              "char_end": 77
+            },
+            "claim_ids": [
+              "en-correction-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-process-b-v1",
+          "title": "Continuity Operating Procedure",
+          "relative_path": "fixtures/en-process-b.docx",
+          "document_version": "1.0",
+          "sha256": "34e5d84a420d365ce82de528d0ebae231cb303097824cbe14685e08008492396"
+        }
+      ]
+    },
+    {
+      "case_id": "en-correction-05",
+      "language": "en",
+      "category": "correction_required",
+      "question": "What synonym identifies the required control?",
+      "proposal": {
+        "expected_outcome": "SUPPORTED",
+        "correction_required": true,
+        "correction_rationale": "The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.",
+        "correction_bridge_anchor_ids": [
+          "en-correction-05-ev-bridge"
+        ],
+        "correction_target_anchor_ids": [
+          "en-correction-05-ev-target"
+        ],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-correction-05-claim-1",
+            "text": "Dual custody identifies the required two-person control for production key export.",
+            "expectation": "supported"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-correction-05-ev-bridge",
+            "source_id": "src-en-security-a-v1",
+            "role": "bridge",
+            "exact_text": "The phrase dual custody is the approved synonym for two-person control.",
+            "normalized_text_sha256": "26c6fe6e8301387f43d704a48f3705b852d961e80aa725d4e45ecc12c7b221ea",
+            "relevance": 2,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 88,
+              "char_end": 159
+            },
+            "claim_ids": [
+              "en-correction-05-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-correction-05-ev-target",
+            "source_id": "src-en-security-a-v1",
+            "role": "necessary",
+            "exact_text": "Two-person control is required whenever a production encryption key is exported.",
+            "normalized_text_sha256": "c8380ed5413105c6d0f9af0582003e86c5c418af271552f5789a9c898b8539d9",
+            "relevance": 3,
+            "locator": {
+              "page": 9,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 0,
+              "char_end": 80
+            },
+            "claim_ids": [
+              "en-correction-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-security-a-v1",
+          "title": "Cryptographic Key Control",
+          "relative_path": "fixtures/en-security-a.pdf",
+          "document_version": "1.0",
+          "sha256": "af6e6367f47406b86c8467e60cdfc8132af4b9825f1da74676d5fd12ab13d7f2"
+        }
+      ]
+    }
+  ]
+}

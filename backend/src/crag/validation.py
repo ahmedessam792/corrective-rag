@@ -28,6 +28,8 @@ from crag.corpus import (
     audit_corpus,
     compile_runtime_manifest,
     lock_corpus,
+    prepare_adjudication_review_batches,
+    prepare_primary_review_batches,
     verify_locked_corpus,
 )
 from crag.database import Database
@@ -1024,6 +1026,15 @@ def _corpus_apply_reviews_command(args: argparse.Namespace) -> int:
     return 0 if not audit.integrity_errors and not audit.case_errors else 2
 
 
+def _corpus_prepare_review_batches_command(args: argparse.Namespace) -> int:
+    if args.stage == "primary":
+        output = prepare_primary_review_batches(args.corpus, args.output)
+    else:
+        output = prepare_adjudication_review_batches(args.corpus, args.output)
+    print(output)
+    return 0
+
+
 def _corpus_verify_lock_command(args: argparse.Namespace) -> int:
     errors = verify_locked_corpus(args.corpus)
     print(json.dumps({"valid": not errors, "errors": errors}, ensure_ascii=False, indent=2))
@@ -1069,6 +1080,14 @@ def parser() -> argparse.ArgumentParser:
     corpus_reviews.add_argument("--reviews", type=Path, required=True)
     corpus_reviews.add_argument("--adjudications", type=Path)
     corpus_reviews.set_defaults(handler=_corpus_apply_reviews_command)
+    corpus_batches = commands.add_parser(
+        "corpus-prepare-review-batches",
+        help="Create evaluator-only primary or adjudication packets without applying decisions",
+    )
+    corpus_batches.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1-draft"))
+    corpus_batches.add_argument("--stage", choices=("primary", "adjudication"), default="primary")
+    corpus_batches.add_argument("--output", type=Path)
+    corpus_batches.set_defaults(handler=_corpus_prepare_review_batches_command)
     corpus_verify = commands.add_parser("corpus-verify-lock", help="Verify a locked corpus checksum set")
     corpus_verify.add_argument("--corpus", type=Path, required=True)
     corpus_verify.set_defaults(handler=_corpus_verify_lock_command)

@@ -47,6 +47,14 @@ MANDATORY_ADJUDICATION_CATEGORIES = {
     "contradictory",
     "prompt_injection",
 }
+REVIEW_BATCH_CATEGORY_ORDER = (
+    "answerable",
+    "correction_required",
+    "unanswerable",
+    "partial",
+    "contradictory",
+    "prompt_injection",
+)
 RUNTIME_ALLOWED_KEYS = {"id", "question", "sources"}
 RUNTIME_PROHIBITED_KEYS = {
     "category",
@@ -676,6 +684,401 @@ def compile_runtime_manifest(root: Path) -> Path:
     return path
 
 
+def _review_case_payload(case: GoldCase, source_by_id: dict[str, SourceRecord]) -> dict[str, Any]:
+    return {
+        "case_id": case.id,
+        "language": case.language,
+        "category": case.category,
+        "question": case.question,
+        "proposal": {
+            "expected_outcome": case.expected_outcome,
+            "correction_required": case.correction.required,
+            "correction_rationale": case.correction.rationale,
+            "correction_bridge_anchor_ids": case.correction.bridge_anchor_ids,
+            "correction_target_anchor_ids": case.correction.target_anchor_ids,
+            "absence_scope": case.absence_scope,
+            "missing_information": case.missing_information,
+            "claims": [claim.model_dump(mode="json") for claim in case.gold_claims],
+            "evidence": [anchor.model_dump(mode="json") for anchor in case.gold_evidence],
+        },
+        "sources": [
+            {
+                "source_id": source.source_id,
+                "title": source.title,
+                "relative_path": source.relative_path,
+                "document_version": source.document_version,
+                "sha256": source.sha256,
+            }
+            for source_id in case.source_ids
+            for source in [source_by_id[source_id]]
+        ],
+    }
+
+
+def _markdown_locator(anchor: EvidenceAnchor) -> str:
+    locator = anchor.locator
+    parts = []
+    if locator.page is not None:
+        parts.append(f"page {locator.page}")
+    if locator.heading_path:
+        parts.append("heading " + " / ".join(locator.heading_path))
+    if locator.paragraph_start is not None:
+        paragraph = str(locator.paragraph_start)
+        if locator.paragraph_end != locator.paragraph_start:
+            paragraph += f"-{locator.paragraph_end}"
+        parts.append(f"paragraph {paragraph}")
+    parts.append(f"characters {locator.char_start}-{locator.char_end}")
+    return ", ".join(parts)
+
+
+def _primary_markdown(
+    *,
+    corpus_id: str,
+    version: str,
+    batch_id: str,
+    cases: list[GoldCase],
+    source_by_id: dict[str, SourceRecord],
+    heading: str = "Primary review batch",
+    include_primary_response: bool = True,
+) -> str:
+    lines = [
+        f"# {heading}: {batch_id}",
+        "",
+        f"Corpus: `{corpus_id}` / `{version}`",
+        "",
+        "This packet contains evaluator-only proposals. Inspect every source directly before deciding. "
+        "Do not treat the proposal or any model assistance as approved truth.",
+        "",
+    ]
+    for case in cases:
+        lines.extend(
+            [
+                f"## {case.id}",
+                "",
+                f"- Language: `{case.language}`",
+                f"- Question: {case.question}",
+                f"- Proposed outcome: `{case.expected_outcome}`",
+                f"- Proposed correction required: `{str(case.correction.required).lower()}`",
+            ]
+        )
+        if case.correction.rationale:
+            lines.append(f"- Correction rationale: {case.correction.rationale}")
+        if case.absence_scope:
+            lines.append(f"- Absence scope: `{case.absence_scope}`")
+        if case.missing_information:
+            lines.append(f"- Missing information: {case.missing_information}")
+        lines.extend(["", "Sources:", ""])
+        for source_id in case.source_ids:
+            source = source_by_id[source_id]
+            lines.append(
+                f"- `{source.source_id}` — {source.title}; `{source.relative_path}`; "
+                f"version `{source.document_version}`; SHA-256 `{source.sha256}`"
+            )
+        lines.extend(["", "Proposed atomic claims:", ""])
+        for claim in case.gold_claims:
+            lines.append(f"- `{claim.id}` (`{claim.expectation}`): {claim.text}")
+        lines.extend(["", "Proposed evidence anchors:", ""])
+        if not case.gold_evidence:
+            lines.append("- None. Confirm the stated missing information is absent from every listed source.")
+        for anchor in case.gold_evidence:
+            lines.extend(
+                [
+                    f"- `{anchor.id}` — source `{anchor.source_id}`, role `{anchor.role}`, "
+                    f"{_markdown_locator(anchor)}",
+                    f"  - Exact passage: “{anchor.exact_text}”",
+                    f"  - Passage SHA-256: `{anchor.normalized_text_sha256}`",
+                    f"  - Claims: {', '.join(f'`{claim_id}`' for claim_id in anchor.claim_ids)}",
+                ]
+            )
+        if include_primary_response:
+            lines.extend(
+                [
+                    "",
+                    "Reviewer decision (complete the companion JSONL record):",
+                    "",
+                    "- Decision: `approved` / `changes_required` / `adjudication_required`",
+                    "- Reviewed outcome: `SUPPORTED` / `PARTIAL` / `INSUFFICIENT` / `CONTRADICTORY`",
+                    "- Reviewed correction required: `true` / `false`",
+                    "- Approved anchor IDs:",
+                    "- Confidence: `high` / `medium` / `low`",
+                    "- Uncertainty:",
+                    "- Notes:",
+                    "",
+                ]
+            )
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _adjudication_markdown(
+    *,
+    corpus_id: str,
+    version: str,
+    batch_id: str,
+    cases: list[GoldCase],
+    source_by_id: dict[str, SourceRecord],
+    review_by_case: dict[str, ReviewRecord],
+) -> str:
+    primary = _primary_markdown(
+        corpus_id=corpus_id,
+        version=version,
+        batch_id=batch_id,
+        cases=cases,
+        source_by_id=source_by_id,
+        heading="Adjudication evidence batch",
+        include_primary_response=False,
+    )
+    lines = [
+        primary.rstrip(),
+        "",
+        "# Preserved primary decisions",
+        "",
+        "The adjudicator must independently inspect the sources. The records below preserve, but do not "
+        "replace, that independent judgment.",
+        "",
+    ]
+    for case in cases:
+        review = review_by_case[case.id]
+        lines.extend(
+            [
+                f"## {case.id} primary record",
+                "",
+                f"- Review ID: `{review.review_id}`",
+                f"- Primary reviewer: `{review.reviewer_id}`",
+                f"- Decision: `{review.decision}`",
+                f"- Reviewed outcome: `{review.reviewed_outcome}`",
+                f"- Reviewed correction required: `{str(review.reviewed_correction_required).lower()}`",
+                f"- Approved anchor IDs: {', '.join(f'`{anchor_id}`' for anchor_id in review.approved_anchor_ids)}",
+                f"- Confidence: `{review.confidence}`",
+                f"- Uncertainty: {'; '.join(review.uncertainty) if review.uncertainty else 'None recorded'}",
+                f"- Notes: {review.notes}",
+                "",
+                "Adjudicator response (complete the companion JSONL record):",
+                "",
+                "- Dispute or mandatory-safety reason:",
+                "- Adjudicated outcome:",
+                "- Approved anchor IDs:",
+                "- Adjudicated correction required:",
+                "- Decision: `approved` / `changes_required`",
+                "- Notes:",
+                "",
+            ]
+        )
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _write_review_artifact(path: Path, content: str) -> None:
+    if path.exists():
+        if not path.is_file() or path.read_text(encoding="utf-8") != content:
+            raise FileExistsError(
+                f"Review artifact already exists with different content; preserve it and choose a new output: {path}"
+            )
+        return
+    path.write_text(content, encoding="utf-8", newline="\n")
+
+
+def _write_packet(path: Path, payload: dict[str, Any]) -> None:
+    _write_review_artifact(path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+
+
+def _prepare_batch_directory(output: Path) -> None:
+    if output.exists():
+        if not output.is_dir():
+            raise ValueError(f"Review batch output is not a directory: {output}")
+    else:
+        output.mkdir(parents=True)
+
+
+def prepare_primary_review_batches(
+    root: Path,
+    output: Path | None = None,
+    *,
+    verify_documents: bool = True,
+) -> Path:
+    """Create evaluator-only bilingual review packets without changing corpus state."""
+    audit = audit_corpus(root, verify_lock=False, verify_documents=verify_documents)
+    if audit.missing_sources or audit.integrity_errors or audit.case_errors:
+        raise RuntimeError("Primary review packets require a structurally clean corpus audit.")
+    metadata, cases, sources, _, _ = load_corpus(root)
+    if metadata.status != CorpusStatus.DRAFT:
+        raise RuntimeError("Primary review packets may only be prepared from a draft corpus.")
+    output = output or root / "review-batches" / "primary"
+    _prepare_batch_directory(output)
+    source_by_id = {source.source_id: source for source in sources}
+    manifest_hash = file_sha256(root / metadata.case_manifest)
+    source_manifest_hash = file_sha256(root / metadata.source_manifest)
+    index: dict[str, Any] = {
+        "packet_schema_version": "1.0",
+        "stage": "primary",
+        "corpus_id": metadata.corpus_id,
+        "corpus_version": metadata.version,
+        "gold_manifest_sha256": manifest_hash,
+        "source_manifest_sha256": source_manifest_hash,
+        "case_count": len(cases),
+        "batches": [],
+    }
+    for number, category in enumerate(REVIEW_BATCH_CATEGORY_ORDER, start=1):
+        batch_cases = sorted(
+            (case for case in cases if case.category == category), key=lambda case: (case.language, case.id)
+        )
+        batch_id = f"primary-{number:02d}-{category.replace('_', '-')}"
+        packet = {
+            "packet_schema_version": "1.0",
+            "stage": "primary",
+            "batch_id": batch_id,
+            "corpus_id": metadata.corpus_id,
+            "corpus_version": metadata.version,
+            "gold_manifest_sha256": manifest_hash,
+            "source_manifest_sha256": source_manifest_hash,
+            "cases": [_review_case_payload(case, source_by_id) for case in batch_cases],
+        }
+        _write_packet(output / f"{batch_id}.packet.json", packet)
+        _write_review_artifact(
+            output / f"{batch_id}.md",
+            _primary_markdown(
+                corpus_id=metadata.corpus_id,
+                version=metadata.version,
+                batch_id=batch_id,
+                cases=batch_cases,
+                source_by_id=source_by_id,
+            ),
+        )
+        response_records = [
+            {
+                "review_id": f"REPLACE-{case.id}",
+                "case_id": case.id,
+                "reviewer_id": "REPLACE-WITH-STABLE-HUMAN-ID",
+                "reviewer_role": "bilingual_primary",
+                "reviewed_outcome": "REPLACE",
+                "approved_anchor_ids": ["REPLACE-WITH-APPROVED-ANCHOR-IDS"],
+                "reviewed_correction_required": "REPLACE-WITH-TRUE-OR-FALSE",
+                "confidence": "REPLACE",
+                "uncertainty": ["REPLACE or use an empty list after explicit review"],
+                "decision": "REPLACE",
+                "notes": "REPLACE after inspecting every listed source and anchor.",
+                "reviewed_at": "REPLACE-WITH-TIMEZONE-AWARE-ISO-8601",
+            }
+            for case in batch_cases
+        ]
+        _write_review_artifact(
+            output / f"{batch_id}.reviews.template.jsonl",
+            "".join(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n" for record in response_records),
+        )
+        index["batches"].append({"batch_id": batch_id, "case_ids": [case.id for case in batch_cases]})
+    _write_packet(output / "index.json", index)
+    return output
+
+
+def prepare_adjudication_review_batches(root: Path, output: Path | None = None) -> Path:
+    """Prepare second-review packets only after valid primary records have been applied."""
+    metadata, cases, sources, reviews, _ = load_corpus(root)
+    if metadata.status != CorpusStatus.DRAFT:
+        raise RuntimeError("Adjudication packets may only be prepared from a draft corpus.")
+    review_by_case = {review.case_id: review for review in reviews}
+    required_cases = [
+        case
+        for case in cases
+        if case.category in MANDATORY_ADJUDICATION_CATEGORIES
+        or (case.id in review_by_case and review_by_case[case.id].decision == "adjudication_required")
+        or (case.id in review_by_case and review_by_case[case.id].confidence != "high")
+    ]
+    missing = sorted(case.id for case in required_cases if case.id not in review_by_case)
+    unresolved_changes = sorted(
+        case.id
+        for case in required_cases
+        if review_by_case.get(case.id) and review_by_case[case.id].decision == "changes_required"
+    )
+    if missing:
+        raise RuntimeError("Adjudication packets require completed primary records for: " + ", ".join(missing))
+    if unresolved_changes:
+        raise RuntimeError(
+            "Cases requiring proposal changes must be revised and re-reviewed first: "
+            + ", ".join(unresolved_changes)
+        )
+    output = output or root / "review-batches" / "adjudication"
+    _prepare_batch_directory(output)
+    source_by_id = {source.source_id: source for source in sources}
+    manifest_hash = file_sha256(root / metadata.case_manifest)
+    source_manifest_hash = file_sha256(root / metadata.source_manifest)
+    review_manifest_hash = file_sha256(root / metadata.review_manifest)
+    batches = []
+    for number, category in enumerate(REVIEW_BATCH_CATEGORY_ORDER, start=1):
+        batch_cases = sorted(
+            (case for case in required_cases if case.category == category), key=lambda case: (case.language, case.id)
+        )
+        if not batch_cases:
+            continue
+        batch_id = f"adjudication-{number:02d}-{category.replace('_', '-')}"
+        packet_cases = []
+        response_records = []
+        for case in batch_cases:
+            review = review_by_case[case.id]
+            payload = _review_case_payload(case, source_by_id)
+            payload["primary_review"] = review.model_dump(mode="json")
+            packet_cases.append(payload)
+            response_records.append(
+                {
+                    "adjudication_id": f"REPLACE-{case.id}",
+                    "case_id": case.id,
+                    "review_id": review.review_id,
+                    "adjudicator_id": "REPLACE-WITH-INDEPENDENT-HUMAN-ID",
+                    "adjudicator_role": "safety_adjudicator",
+                    "original_outcome": review.reviewed_outcome,
+                    "dispute_reason": "REPLACE with the mandatory safety reason or reviewer dispute.",
+                    "adjudicated_outcome": "REPLACE",
+                    "approved_anchor_ids": ["REPLACE-WITH-APPROVED-ANCHOR-IDS"],
+                    "adjudicated_correction_required": "REPLACE-WITH-TRUE-OR-FALSE",
+                    "decision": "REPLACE",
+                    "notes": "REPLACE after independent source inspection.",
+                    "adjudicated_at": "REPLACE-WITH-TIMEZONE-AWARE-ISO-8601",
+                }
+            )
+        _write_packet(
+            output / f"{batch_id}.packet.json",
+            {
+                "packet_schema_version": "1.0",
+                "stage": "adjudication",
+                "batch_id": batch_id,
+                "corpus_id": metadata.corpus_id,
+                "corpus_version": metadata.version,
+                "gold_manifest_sha256": manifest_hash,
+                "source_manifest_sha256": source_manifest_hash,
+                "review_manifest_sha256": review_manifest_hash,
+                "cases": packet_cases,
+            },
+        )
+        _write_review_artifact(
+            output / f"{batch_id}.md",
+            _adjudication_markdown(
+                corpus_id=metadata.corpus_id,
+                version=metadata.version,
+                batch_id=batch_id,
+                cases=batch_cases,
+                source_by_id=source_by_id,
+                review_by_case=review_by_case,
+            ),
+        )
+        _write_review_artifact(
+            output / f"{batch_id}.adjudications.template.jsonl",
+            "".join(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n" for record in response_records),
+        )
+        batches.append({"batch_id": batch_id, "case_ids": [case.id for case in batch_cases]})
+    _write_packet(
+        output / "index.json",
+        {
+            "packet_schema_version": "1.0",
+            "stage": "adjudication",
+            "corpus_id": metadata.corpus_id,
+            "corpus_version": metadata.version,
+            "gold_manifest_sha256": manifest_hash,
+            "source_manifest_sha256": source_manifest_hash,
+            "review_manifest_sha256": review_manifest_hash,
+            "case_count": len(required_cases),
+            "batches": batches,
+        },
+    )
+    return output
+
+
 def apply_review_records(root: Path, reviews_path: Path, adjudications_path: Path | None = None) -> CorpusAudit:
     metadata, cases, _, _, _ = load_corpus(root)
     if metadata.status == CorpusStatus.LOCKED:
@@ -831,6 +1234,7 @@ def lock_corpus(draft_root: Path, locked_root: Path) -> Path:
         "source_specs.jsonl",
     ):
         (locked_root / auxiliary).unlink(missing_ok=True)
+    shutil.rmtree(locked_root / "review-batches", ignore_errors=True)
     metadata.aggregate_sha256 = None
     (locked_root / "corpus.json").write_text(
         metadata.model_dump_json(indent=2, exclude_none=True) + "\n", encoding="utf-8", newline="\n"

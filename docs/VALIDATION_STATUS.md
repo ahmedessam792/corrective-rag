@@ -39,3 +39,15 @@ Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z
 | Full application smoke | Direct real workflow is proven, but real SSE replay and active Ollama cancellation have not been recorded end-to-end through the browser/API | Runtime/application | Run the operational smoke checklist and attach the API/SSE trace before acceptance. |
 
 No deterministic test result, calibration output, or successful local generation should be interpreted as a validated CRAG MVP.
+
+## Phase 6D review handoff — 2026-08-14
+
+- The deep corpus audit still reports 60/60 structurally complete cases, 60/60 accessible sources,
+  zero integrity failures, and zero runtime/gold-data leakage errors.
+- Six evaluator-only bilingual primary-review batches are prepared under
+  `evaluation/corpora/crag-gold-v1-draft/review-batches/primary/`; each contains five English and five
+  Arabic cases from one frozen category and is hash-bound to the current gold and source manifests.
+- Human status remains 0/60 reviewed, 0/60 approved, and 0/40 independently adjudicated. The guarded
+  adjudication exporter correctly refuses to run until the 40 mandatory cases have primary records.
+- The full deterministic suite now passes 27 tests. No acceptance benchmark was run and no locked corpus
+  version was created.

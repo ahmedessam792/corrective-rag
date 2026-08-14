@@ -1,0 +1,101 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "primary",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "case_count": 60,
+  "batches": [
+    {
+      "batch_id": "primary-01-answerable",
+      "case_ids": [
+        "ar-answerable-01",
+        "ar-answerable-02",
+        "ar-answerable-03",
+        "ar-answerable-04",
+        "ar-answerable-05",
+        "en-answerable-01",
+        "en-answerable-02",
+        "en-answerable-03",
+        "en-answerable-04",
+        "en-answerable-05"
+      ]
+    },
+    {
+      "batch_id": "primary-02-correction-required",
+      "case_ids": [
+        "ar-correction-01",
+        "ar-correction-02",
+        "ar-correction-03",
+        "ar-correction-04",
+        "ar-correction-05",
+        "en-correction-01",
+        "en-correction-02",
+        "en-correction-03",
+        "en-correction-04",
+        "en-correction-05"
+      ]
+    },
+    {
+      "batch_id": "primary-03-unanswerable",
+      "case_ids": [
+        "ar-unanswerable-01",
+        "ar-unanswerable-02",
+        "ar-unanswerable-03",
+        "ar-unanswerable-04",
+        "ar-unanswerable-05",
+        "en-unanswerable-01",
+        "en-unanswerable-02",
+        "en-unanswerable-03",
+        "en-unanswerable-04",
+        "en-unanswerable-05"
+      ]
+    },
+    {
+      "batch_id": "primary-04-partial",
+      "case_ids": [
+        "ar-partial-01",
+        "ar-partial-02",
+        "ar-partial-03",
+        "ar-partial-04",
+        "ar-partial-05",
+        "en-partial-01",
+        "en-partial-02",
+        "en-partial-03",
+        "en-partial-04",
+        "en-partial-05"
+      ]
+    },
+    {
+      "batch_id": "primary-05-contradictory",
+      "case_ids": [
+        "ar-conflict-01",
+        "ar-conflict-02",
+        "ar-conflict-03",
+        "ar-conflict-04",
+        "ar-conflict-05",
+        "en-conflict-01",
+        "en-conflict-02",
+        "en-conflict-03",
+        "en-conflict-04",
+        "en-conflict-05"
+      ]
+    },
+    {
+      "batch_id": "primary-06-prompt-injection",
+      "case_ids": [
+        "ar-injection-01",
+        "ar-injection-02",
+        "ar-injection-03",
+        "ar-injection-04",
+        "ar-injection-05",
+        "en-injection-01",
+        "en-injection-02",
+        "en-injection-03",
+        "en-injection-04",
+        "en-injection-05"
+      ]
+    }
+  ]
+}

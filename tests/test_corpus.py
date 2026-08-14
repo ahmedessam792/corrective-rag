@@ -16,6 +16,8 @@ from crag.corpus import (
     compile_runtime_manifest,
     load_corpus,
     lock_corpus,
+    prepare_adjudication_review_batches,
+    prepare_primary_review_batches,
     verify_locked_corpus,
 )
 
@@ -85,6 +87,40 @@ def test_arabic_questions_and_evidence_are_nfc() -> None:
         assert all(unicodedata.is_normalized("NFC", anchor["exact_text"]) for anchor in record["gold_evidence"])
 
 
+def test_primary_review_batches_are_complete_and_do_not_mutate_corpus(tmp_path: Path) -> None:
+    protected = {
+        name: (CORPUS / name).read_bytes()
+        for name in ("gold_cases.jsonl", "reviews.jsonl", "adjudications.jsonl", "runtime_cases.jsonl")
+    }
+    output = prepare_primary_review_batches(CORPUS, tmp_path / "primary", verify_documents=False)
+    index = json.loads((output / "index.json").read_text(encoding="utf-8"))
+    assert index["stage"] == "primary"
+    assert index["case_count"] == EXPECTED_CASES
+    assert len(index["batches"]) == 6
+    assert all(len(batch["case_ids"]) == 10 for batch in index["batches"])
+    case_ids = [case_id for batch in index["batches"] for case_id in batch["case_ids"]]
+    assert len(case_ids) == len(set(case_ids)) == EXPECTED_CASES
+    for batch in index["batches"]:
+        packet = json.loads((output / f"{batch['batch_id']}.packet.json").read_text(encoding="utf-8"))
+        assert {case["language"] for case in packet["cases"]} == {"en", "ar"}
+        assert all(case["sources"] for case in packet["cases"])
+        assert all("expected_outcome" in case["proposal"] for case in packet["cases"])
+        assert (output / f"{batch['batch_id']}.md").is_file()
+        assert (output / f"{batch['batch_id']}.reviews.template.jsonl").is_file()
+    assert prepare_primary_review_batches(CORPUS, output, verify_documents=False) == output
+    first_template = output / f"{index['batches'][0]['batch_id']}.reviews.template.jsonl"
+    first_template.write_text(first_template.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    with pytest.raises(FileExistsError, match="preserve it"):
+        prepare_primary_review_batches(CORPUS, output, verify_documents=False)
+    for name, original in protected.items():
+        assert (CORPUS / name).read_bytes() == original
+
+
+def test_adjudication_batches_refuse_to_preempt_primary_review(tmp_path: Path) -> None:
+    with pytest.raises(RuntimeError, match="completed primary records"):
+        prepare_adjudication_review_batches(CORPUS, tmp_path / "adjudication")
+
+
 def test_complete_human_records_can_be_applied(tmp_path: Path) -> None:
     copied = tmp_path / "draft"
     shutil.copytree(CORPUS, copied)
@@ -131,6 +167,11 @@ def test_complete_human_records_can_be_applied(tmp_path: Path) -> None:
     adjudication_path.write_text("".join(record.model_dump_json() + "\n" for record in adjudications), encoding="utf-8")
     applied = apply_review_records(copied, review_path, adjudication_path)
     assert applied.approved_cases == EXPECTED_CASES
+    output = prepare_adjudication_review_batches(copied, tmp_path / "adjudication")
+    index = json.loads((output / "index.json").read_text(encoding="utf-8"))
+    assert index["case_count"] == 40
+    assert len(index["batches"]) == 4
+    assert all((output / f"{batch['batch_id']}.md").is_file() for batch in index["batches"])
 
 
 def test_locked_checksum_tamper_detection(tmp_path: Path) -> None:

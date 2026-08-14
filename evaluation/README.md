@@ -49,10 +49,36 @@ Audit the draft:
 ```
 
 The expected pre-review verdict is `Corpus complete but human approval pending`. Reviewers must inspect
-the rendered files, then complete copies of `reviews.template.jsonl` and
-`adjudications.template.jsonl`. Template placeholders are intentionally invalid and cannot be applied.
+the rendered files. Prepare six ten-case bilingual primary packets, grouped by category, with:
 
-Apply accountable review records and regenerate the runtime boundary:
+```powershell
+.venv\Scripts\python.exe validate.py corpus-prepare-review-batches --stage primary
+```
+
+The generated `review-batches/primary/` directory contains Markdown evidence packets, machine-readable
+packet JSON, and one response template per batch. The packet index binds the material to the current gold
+and source manifests by SHA-256. Template placeholders are intentionally invalid and cannot be applied.
+All packet content is evaluator-only and must never be passed to the runtime.
+The current draft already includes these generated packets. Copy response templates to reviewer-owned
+working files before editing them. Regeneration is idempotent for unchanged artifacts and refuses to
+overwrite any changed packet or response file; use a new `--output` directory when preserving review work.
+
+After all 60 primary records have been completed and applied, prepare the independent adjudicator's
+packets with:
+
+```powershell
+.venv\Scripts\python.exe validate.py corpus-apply-reviews `
+  --reviews PATH_TO_ALL_60_COMPLETED_PRIMARY_REVIEWS.jsonl
+.venv\Scripts\python.exe validate.py corpus-prepare-review-batches --stage adjudication
+```
+
+That command refuses to run before every required primary record exists. It includes the preserved
+primary decision and creates packets for all mandatory or uncertainty-triggered adjudications. A separate
+human must complete the response templates. The original monolithic `reviews.template.jsonl` and
+`adjudications.template.jsonl` remain available, but do not contain the evidence-rich review presentation.
+
+After independent adjudication, apply the same preserved 60 primary records together with all required
+adjudication records, then regenerate the runtime boundary:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-apply-reviews `
@@ -71,7 +97,8 @@ Lock only after all 60 cases are approved and all mandatory adjudications are co
 ```
 
 Locking never overwrites an existing directory. Any legitimate post-lock change requires a new version;
-previous locked versions stay intact. Do not run the final benchmark against the draft corpus.
+previous locked versions stay intact. Review packets and unfilled templates are excluded from the locked
+release; signed review and adjudication records remain. Do not run the final benchmark against the draft corpus.
 
 Audit readiness:
 

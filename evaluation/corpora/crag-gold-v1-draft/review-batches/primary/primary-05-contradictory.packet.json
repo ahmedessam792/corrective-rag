@@ -1,0 +1,827 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "primary",
+  "batch_id": "primary-05-contradictory",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "cases": [
+    {
+      "case_id": "ar-conflict-01",
+      "language": "ar",
+      "category": "contradictory",
+      "question": "ما مدة الاحتفاظ المعتمدة؟",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-conflict-01-claim-1",
+            "text": "يذكر أحد المصدرين المعتمدين مدة خمس سنوات.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-conflict-01-ev-conflict-a",
+            "source_id": "src-ar-conflict-retention-v1",
+            "role": "conflicting",
+            "exact_text": "مدة الاحتفاظ المعتمدة لسجلات الخدمة هي خمس سنوات.",
+            "normalized_text_sha256": "fb2dd506a5d4a3576adfba1cc99e4b140c3a5393fa7c70ddd6ad3b6c15cfd604",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 69,
+              "char_end": 118
+            },
+            "claim_ids": [
+              "ar-conflict-01-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-conflict-01-ev-conflict-b",
+            "source_id": "src-ar-conflict-retention-counter-v1",
+            "role": "conflicting",
+            "exact_text": "مدة الاحتفاظ المعتمدة لسجلات الخدمة هي سبع سنوات.",
+            "normalized_text_sha256": "9b015ae1b38894ab89f3064077779b45581a9e84098a2e7b16b7cdf704995d74",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 79,
+              "char_end": 128
+            },
+            "claim_ids": [
+              "ar-conflict-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-conflict-retention-v1",
+          "title": "جدول الاحتفاظ - العمليات",
+          "relative_path": "fixtures/ar-conflict-retention.pdf",
+          "document_version": "1.0",
+          "sha256": "2b97499458e6143ac6e3ec195aafb5aee9803b0db325e3cc85c47fae968b9264"
+        },
+        {
+          "source_id": "src-ar-conflict-retention-counter-v1",
+          "title": "جدول الاحتفاظ - العمليات - الحوكمة",
+          "relative_path": "fixtures/ar-conflict-retention-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "4b7e7bbfa2f478ab9608a717d4e31e15c5032de21831210b0bee448c249d8cb7"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-conflict-02",
+      "language": "ar",
+      "category": "contradictory",
+      "question": "أي فريق مسؤول عن الاستجابة للحوادث؟",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-conflict-02-claim-1",
+            "text": "يسند أحد المصدرين المعتمدين المسؤولية إلى فريق العمليات الأمنية.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-conflict-02-ev-conflict-a",
+            "source_id": "src-ar-conflict-owner-v1",
+            "role": "conflicting",
+            "exact_text": "يتولى فريق العمليات الأمنية مسؤولية الاستجابة للحوادث.",
+            "normalized_text_sha256": "bd8322d5b1618ce8aab1b8597bca758f541c5548acf433beeb40e270654a54ca",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 54
+            },
+            "claim_ids": [
+              "ar-conflict-02-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-conflict-02-ev-conflict-b",
+            "source_id": "src-ar-conflict-owner-counter-v1",
+            "role": "conflicting",
+            "exact_text": "يتولى فريق مرونة التقنية مسؤولية الاستجابة للحوادث.",
+            "normalized_text_sha256": "ddcf5b75cccfeda8264d644564783db191172a6fc35f973e15f75d4b9d813582",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 51
+            },
+            "claim_ids": [
+              "ar-conflict-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-conflict-owner-v1",
+          "title": "ميثاق الاستجابة للحوادث",
+          "relative_path": "fixtures/ar-conflict-owner.docx",
+          "document_version": "1.0",
+          "sha256": "6cc747255d41f8aa32cbaedb339d3b85ddca66593bee4dcc5cab5eea2c515a19"
+        },
+        {
+          "source_id": "src-ar-conflict-owner-counter-v1",
+          "title": "ميثاق الاستجابة للحوادث - الحوكمة",
+          "relative_path": "fixtures/ar-conflict-owner-counter.docx",
+          "document_version": "1.0",
+          "sha256": "42b537a3009d328c3a60bceec9109b189e271306fc80118257fea92dee63566e"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-conflict-03",
+      "language": "ar",
+      "category": "contradictory",
+      "question": "متى تدخل السياسة حيز التنفيذ؟",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-conflict-03-claim-1",
+            "text": "يذكر أحد المصدرين المعتمدين تاريخ الأول من يناير عام ألفين وستة وعشرين.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-conflict-03-ev-conflict-a",
+            "source_id": "src-ar-conflict-date-v1",
+            "role": "conflicting",
+            "exact_text": "تدخل السياسة حيز التنفيذ في الأول من يناير عام ألفين وستة وعشرين.",
+            "normalized_text_sha256": "ae864e7ddc0efe44ad53b3dfc00ab10f46e7e976d70d836b61978bf923b4e73b",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 68,
+              "char_end": 133
+            },
+            "claim_ids": [
+              "ar-conflict-03-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-conflict-03-ev-conflict-b",
+            "source_id": "src-ar-conflict-date-counter-v1",
+            "role": "conflicting",
+            "exact_text": "تدخل السياسة حيز التنفيذ في الأول من مارس عام ألفين وستة وعشرين.",
+            "normalized_text_sha256": "f7d417feaca9c32d491a71f04ecbcbad69a0f1d14f877b141e24b816e10f34a2",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 78,
+              "char_end": 142
+            },
+            "claim_ids": [
+              "ar-conflict-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-conflict-date-v1",
+          "title": "إشعار بدء سريان السياسة",
+          "relative_path": "fixtures/ar-conflict-date.pdf",
+          "document_version": "1.0",
+          "sha256": "621bf4425295cd0b0f08b8f1f43b43aa4308b9ef991f336d317c91ccdbb4a752"
+        },
+        {
+          "source_id": "src-ar-conflict-date-counter-v1",
+          "title": "إشعار بدء سريان السياسة - الحوكمة",
+          "relative_path": "fixtures/ar-conflict-date-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "f1d9a32f7e67a9d54f6614d569208db8e25462d8aaea38289a1a26a9d7c9bbbc"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-conflict-04",
+      "language": "ar",
+      "category": "contradictory",
+      "question": "ما حجم العينة المذكور؟",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-conflict-04-claim-1",
+            "text": "يذكر أحد المصدرين المعتمدين أن حجم العينة أربعمئة وثمانون.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-conflict-04-ev-conflict-a",
+            "source_id": "src-ar-conflict-sample-v1",
+            "role": "conflicting",
+            "exact_text": "تتكون العينة المذكورة من أربعمئة وثمانين ملاحظة مكتملة.",
+            "normalized_text_sha256": "a03139a13564ad72b96879e1ae364573d3cd2aa6900110561920af9d37095102",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 55
+            },
+            "claim_ids": [
+              "ar-conflict-04-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-conflict-04-ev-conflict-b",
+            "source_id": "src-ar-conflict-sample-counter-v1",
+            "role": "conflicting",
+            "exact_text": "تتكون العينة المذكورة من خمسمئة واثنتي عشرة ملاحظة مكتملة.",
+            "normalized_text_sha256": "905cb193403c77c177f9db41eab8e0791af31df598fcf3800df3446b9f18a0eb",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 58
+            },
+            "claim_ids": [
+              "ar-conflict-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-conflict-sample-v1",
+          "title": "مذكرة منهجية أخذ العينات",
+          "relative_path": "fixtures/ar-conflict-sample.docx",
+          "document_version": "1.0",
+          "sha256": "81d932da9e79a17d379d73bbe61dad86860a15ee879b7eade374e8303a52bc9a"
+        },
+        {
+          "source_id": "src-ar-conflict-sample-counter-v1",
+          "title": "مذكرة منهجية أخذ العينات - الحوكمة",
+          "relative_path": "fixtures/ar-conflict-sample-counter.docx",
+          "document_version": "1.0",
+          "sha256": "eb8e924d73b3a1d19435142a8944659bdd8f51a5dfceacbb58416be49ffd1c57"
+        }
+      ]
+    },
+    {
+      "case_id": "ar-conflict-05",
+      "language": "ar",
+      "category": "contradictory",
+      "question": "هل الضابط إلزامي؟",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "ar-conflict-05-claim-1",
+            "text": "ينص أحد المصدرين المعتمدين على أن الضابط إلزامي.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-conflict-05-ev-conflict-a",
+            "source_id": "src-ar-conflict-control-v1",
+            "role": "conflicting",
+            "exact_text": "ضابط عزل الأجهزة الطرفية إلزامي لجميع الحواسيب المحمولة المُدارة.",
+            "normalized_text_sha256": "42bc44d7d79b211b1139204464a6070de30c4da7476ce0c8e5be949ec76fb842",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 71,
+              "char_end": 136
+            },
+            "claim_ids": [
+              "ar-conflict-05-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "ar-conflict-05-ev-conflict-b",
+            "source_id": "src-ar-conflict-control-counter-v1",
+            "role": "conflicting",
+            "exact_text": "ضابط عزل الأجهزة الطرفية موصى به لكنه غير إلزامي للحواسيب المحمولة المُدارة.",
+            "normalized_text_sha256": "5945119499d8c75f3e76a5285bbdb17cae8c2ddd49bab3828c679671f6e8447a",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 81,
+              "char_end": 157
+            },
+            "claim_ids": [
+              "ar-conflict-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-conflict-control-v1",
+          "title": "معيار ضابط الأجهزة الطرفية",
+          "relative_path": "fixtures/ar-conflict-control.pdf",
+          "document_version": "1.0",
+          "sha256": "1efa69118a6e0aed6ef1d24130c9dbe453bbfd454b317442063e4afdfccf168f"
+        },
+        {
+          "source_id": "src-ar-conflict-control-counter-v1",
+          "title": "معيار ضابط الأجهزة الطرفية - الحوكمة",
+          "relative_path": "fixtures/ar-conflict-control-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "a440ef63eebc38eba6cacb8029392f2ccac40cc0c6890cdc4fd79bf1a6819d8a"
+        }
+      ]
+    },
+    {
+      "case_id": "en-conflict-01",
+      "language": "en",
+      "category": "contradictory",
+      "question": "What is the approved retention period?",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-conflict-01-claim-1",
+            "text": "One verified source states five years.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-conflict-01-ev-conflict-a",
+            "source_id": "src-en-conflict-retention-v1",
+            "role": "conflicting",
+            "exact_text": "The approved retention period for service records is five years.",
+            "normalized_text_sha256": "93a30900ff4d1f698e74ab9c3d423e8e35818ccd7391861f535bc23eb0e40977",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 91,
+              "char_end": 155
+            },
+            "claim_ids": [
+              "en-conflict-01-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-conflict-01-ev-conflict-b",
+            "source_id": "src-en-conflict-retention-counter-v1",
+            "role": "conflicting",
+            "exact_text": "The approved retention period for service records is seven years.",
+            "normalized_text_sha256": "6d77b94315435182b7e616a22716b97f0b8d742a541769245996c00784a12cfd",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 104,
+              "char_end": 169
+            },
+            "claim_ids": [
+              "en-conflict-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-conflict-retention-v1",
+          "title": "Retention Schedule - Operations",
+          "relative_path": "fixtures/en-conflict-retention.pdf",
+          "document_version": "1.0",
+          "sha256": "c00450aa3418278d3b910a08dc07c47316fb3c3b4ff589ee885a6d9b77627ed9"
+        },
+        {
+          "source_id": "src-en-conflict-retention-counter-v1",
+          "title": "Retention Schedule - Operations - Governance",
+          "relative_path": "fixtures/en-conflict-retention-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "db8a211bbfed62fe41abe79370d29d949e1e7413e44df8a08d9b25bfd7fe057b"
+        }
+      ]
+    },
+    {
+      "case_id": "en-conflict-02",
+      "language": "en",
+      "category": "contradictory",
+      "question": "Which team owns incident response?",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-conflict-02-claim-1",
+            "text": "One verified source assigns ownership to Security Operations.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-conflict-02-ev-conflict-a",
+            "source_id": "src-en-conflict-owner-v1",
+            "role": "conflicting",
+            "exact_text": "The Security Operations team owns incident response.",
+            "normalized_text_sha256": "3026ec3a510ce8a172c8798c53f8cddf0cbfcc4e9cd24c9f9117f42a1b10ef75",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 52
+            },
+            "claim_ids": [
+              "en-conflict-02-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-conflict-02-ev-conflict-b",
+            "source_id": "src-en-conflict-owner-counter-v1",
+            "role": "conflicting",
+            "exact_text": "The Technology Resilience team owns incident response.",
+            "normalized_text_sha256": "9ac7e1d4f781b5e5bbfeaa2fbe516142281553b4d3dd7fa594a50680384ec31e",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 54
+            },
+            "claim_ids": [
+              "en-conflict-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-conflict-owner-v1",
+          "title": "Incident Response Charter",
+          "relative_path": "fixtures/en-conflict-owner.docx",
+          "document_version": "1.0",
+          "sha256": "2ccdc171a960d10bd3cc4ab18ca57d5bdc47e689c1c8c6018ccfe2169a601769"
+        },
+        {
+          "source_id": "src-en-conflict-owner-counter-v1",
+          "title": "Incident Response Charter - Governance",
+          "relative_path": "fixtures/en-conflict-owner-counter.docx",
+          "document_version": "1.0",
+          "sha256": "8fa65764aba49adfede167db0489b9d74f05d4c500e6a7a2d469b44fa4c50dc4"
+        }
+      ]
+    },
+    {
+      "case_id": "en-conflict-03",
+      "language": "en",
+      "category": "contradictory",
+      "question": "When does the policy take effect?",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-conflict-03-claim-1",
+            "text": "One verified source gives 1 January 2026.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-conflict-03-ev-conflict-a",
+            "source_id": "src-en-conflict-date-v1",
+            "role": "conflicting",
+            "exact_text": "The policy takes effect on 1 January 2026.",
+            "normalized_text_sha256": "43a3b5044b973ffb075731bc58086a6a4a3f38a905f4f979932f8862749355de",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 86,
+              "char_end": 128
+            },
+            "claim_ids": [
+              "en-conflict-03-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-conflict-03-ev-conflict-b",
+            "source_id": "src-en-conflict-date-counter-v1",
+            "role": "conflicting",
+            "exact_text": "The policy takes effect on 1 March 2026.",
+            "normalized_text_sha256": "5f991d7a249d13a2f3f619f326213b6ba9e816b1ee7ae04fd64bcd2c29ddfc1b",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 99,
+              "char_end": 139
+            },
+            "claim_ids": [
+              "en-conflict-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-conflict-date-v1",
+          "title": "Policy Commencement Notice",
+          "relative_path": "fixtures/en-conflict-date.pdf",
+          "document_version": "1.0",
+          "sha256": "63a9e2a378761b255acbe763b0fdf620b20c75723731af60d6fb78e4a346d704"
+        },
+        {
+          "source_id": "src-en-conflict-date-counter-v1",
+          "title": "Policy Commencement Notice - Governance",
+          "relative_path": "fixtures/en-conflict-date-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "b79661feab4b896645f67aec1a3b72d6e6b7b2212bc6bccfa52014c4668e3da1"
+        }
+      ]
+    },
+    {
+      "case_id": "en-conflict-04",
+      "language": "en",
+      "category": "contradictory",
+      "question": "What is the reported sample size?",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-conflict-04-claim-1",
+            "text": "One verified source reports a sample size of 480.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-conflict-04-ev-conflict-a",
+            "source_id": "src-en-conflict-sample-v1",
+            "role": "conflicting",
+            "exact_text": "The reported sample contains 480 completed observations.",
+            "normalized_text_sha256": "61bb0d6b212f721dba18ded80e65e75871561d8ddb1b57864625d04ab31df27f",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 56
+            },
+            "claim_ids": [
+              "en-conflict-04-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-conflict-04-ev-conflict-b",
+            "source_id": "src-en-conflict-sample-counter-v1",
+            "role": "conflicting",
+            "exact_text": "The reported sample contains 512 completed observations.",
+            "normalized_text_sha256": "3761b487b32595f726ca2720e162a47ab5945aa47f8f4fe9b476e4233d4117ee",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 56
+            },
+            "claim_ids": [
+              "en-conflict-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-conflict-sample-v1",
+          "title": "Sampling Method Note",
+          "relative_path": "fixtures/en-conflict-sample.docx",
+          "document_version": "1.0",
+          "sha256": "b8fcd91b1ec5575a75660dfa3d05326e31059a9b4a2a8e3061077157689405bb"
+        },
+        {
+          "source_id": "src-en-conflict-sample-counter-v1",
+          "title": "Sampling Method Note - Governance",
+          "relative_path": "fixtures/en-conflict-sample-counter.docx",
+          "document_version": "1.0",
+          "sha256": "a418ff5a5a4431863084320e7576ba062b3293a794cc06d4bdbf49a0fc86974e"
+        }
+      ]
+    },
+    {
+      "case_id": "en-conflict-05",
+      "language": "en",
+      "category": "contradictory",
+      "question": "Is the control mandatory?",
+      "proposal": {
+        "expected_outcome": "CONTRADICTORY",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": null,
+        "claims": [
+          {
+            "id": "en-conflict-05-claim-1",
+            "text": "One verified source states that the control is mandatory.",
+            "expectation": "conflicted"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-conflict-05-ev-conflict-a",
+            "source_id": "src-en-conflict-control-v1",
+            "role": "conflicting",
+            "exact_text": "The endpoint isolation control is mandatory for all managed laptops.",
+            "normalized_text_sha256": "f7a2cbf0f98e1718a6104b0be58445d900038a554152863dcd2657bdc8feea77",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 85,
+              "char_end": 153
+            },
+            "claim_ids": [
+              "en-conflict-05-claim-1"
+            ],
+            "alternative_group": null
+          },
+          {
+            "id": "en-conflict-05-ev-conflict-b",
+            "source_id": "src-en-conflict-control-counter-v1",
+            "role": "conflicting",
+            "exact_text": "The endpoint isolation control is recommended but not mandatory for managed laptops.",
+            "normalized_text_sha256": "e180d083a7efcdadb128c2409991de3430a6f56e246737dd4eede240596faf71",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 98,
+              "char_end": 182
+            },
+            "claim_ids": [
+              "en-conflict-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-conflict-control-v1",
+          "title": "Endpoint Control Standard",
+          "relative_path": "fixtures/en-conflict-control.pdf",
+          "document_version": "1.0",
+          "sha256": "c5ff3fd5676a1e78c8b275d48acf6bdcd24fc313d557667808cbd6b365693589"
+        },
+        {
+          "source_id": "src-en-conflict-control-counter-v1",
+          "title": "Endpoint Control Standard - Governance",
+          "relative_path": "fixtures/en-conflict-control-counter.pdf",
+          "document_version": "1.0",
+          "sha256": "01b24fc8d8ad494ba29e78e6a02b5e0b5b72adb90db5c7e3f2aa1e72c704a9cd"
+        }
+      ]
+    }
+  ]
+}
