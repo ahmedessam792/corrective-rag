@@ -4,7 +4,7 @@
   "batch_id": "primary-03-unanswerable",
   "corpus_id": "crag-bilingual-gold",
   "corpus_version": "crag-gold-v1-draft",
-  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "gold_manifest_sha256": "2e70a0f1b22284a73585bf4648563db3834aa920d7cd62c1798aeff2e5b631f2",
   "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
   "cases": [
     {
@@ -43,7 +43,7 @@
       "case_id": "ar-unanswerable-02",
       "language": "ar",
       "category": "unanswerable",
-      "question": "ماذا حدث بعد فترة التقرير؟",
+      "question": "ما النتائج التشغيلية المسجلة في الربع التالي لفترة التقرير؟",
       "proposal": {
         "expected_outcome": "INSUFFICIENT",
         "correction_required": false,
@@ -51,11 +51,11 @@
         "correction_bridge_anchor_ids": [],
         "correction_target_anchor_ids": [],
         "absence_scope": "all_case_sources",
-        "missing_information": "الأحداث اللاحقة لفترة التقرير غير موجودة.",
+        "missing_information": "النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.",
         "claims": [
           {
             "id": "ar-unanswerable-02-claim-1",
-            "text": "الأحداث اللاحقة لفترة التقرير غير موجودة.",
+            "text": "النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.",
             "expectation": "absent"
           }
         ],
@@ -203,7 +203,7 @@
       "case_id": "en-unanswerable-02",
       "language": "en",
       "category": "unanswerable",
-      "question": "What happened after the reporting period?",
+      "question": "What operational results were recorded in the quarter following the reporting period?",
       "proposal": {
         "expected_outcome": "INSUFFICIENT",
         "correction_required": false,
@@ -211,11 +211,11 @@
         "correction_bridge_anchor_ids": [],
         "correction_target_anchor_ids": [],
         "absence_scope": "all_case_sources",
-        "missing_information": "Events after the reporting period are absent.",
+        "missing_information": "Operational results for the quarter following the reporting period are absent.",
         "claims": [
           {
             "id": "en-unanswerable-02-claim-1",
-            "text": "Events after the reporting period are absent.",
+            "text": "Operational results for the quarter following the reporting period are absent.",
             "expectation": "absent"
           }
         ],

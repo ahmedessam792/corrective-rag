@@ -44,7 +44,7 @@ Reviewer decision (complete the companion JSONL record):
 ## ar-correction-02
 
 - Language: `ar`
-- Question: كيف يصف المصدر المصطلح القديم الآن؟
+- Question: إلى أي سجل معتمد يشير المصطلح القديم «الدفتر الأزرق»، وفيمَ يُستخدم هذا السجل؟
 - Proposed outcome: `SUPPORTED`
 - Proposed correction required: `true`
 - Correction rationale: يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.
@@ -55,7 +55,7 @@ Sources:
 
 Proposed atomic claims:
 
-- `ar-correction-02-claim-1` (`supported`): أصبح المصطلح القديم الدفتر الأزرق يُسمى الآن سجل الحالات.
+- `ar-correction-02-claim-1` (`supported`): يشير المصطلح القديم الدفتر الأزرق إلى سجل الحالات، وهو السجل المعتمد حالياً للحالات الخدمية المفتوحة.
 
 Proposed evidence anchors:
 
@@ -118,7 +118,7 @@ Reviewer decision (complete the companion JSONL record):
 ## ar-correction-04
 
 - Language: `ar`
-- Question: أي قسم يحتوي على الاسم التشغيلي؟
+- Question: ما الاسم التشغيلي الذي تستخدمه الوحدة في القسم الذي يتضمن قواعد التسمية المعتمدة؟
 - Proposed outcome: `SUPPORTED`
 - Proposed correction required: `true`
 - Correction rationale: يستخدم السؤال تعبيراً عاماً أو قديماً؛ ويربطه دليل الجسر بالمصطلح المعتمد اللازم لاسترجاع المقطع المستهدف.
@@ -229,7 +229,7 @@ Reviewer decision (complete the companion JSONL record):
 ## en-correction-02
 
 - Language: `en`
-- Question: How is the older term described now?
+- Question: What current controlled record did the former term Blue Ledger refer to, and what is that record used for?
 - Proposed outcome: `SUPPORTED`
 - Proposed correction required: `true`
 - Correction rationale: The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.
@@ -240,7 +240,7 @@ Sources:
 
 Proposed atomic claims:
 
-- `en-correction-02-claim-1` (`supported`): The older term Blue Ledger is now called the Case Register.
+- `en-correction-02-claim-1` (`supported`): The former term Blue Ledger refers to the Case Register, the current controlled record for open service cases.
 
 Proposed evidence anchors:
 
@@ -303,7 +303,7 @@ Reviewer decision (complete the companion JSONL record):
 ## en-correction-04
 
 - Language: `en`
-- Question: Which section contains the operational name?
+- Question: What operational name does the unit use in the section that contains the controlled naming rules?
 - Proposed outcome: `SUPPORTED`
 - Proposed correction required: `true`
 - Correction rationale: The question uses a generic or legacy expression; the bridge maps it to the controlled term needed to retrieve the target passage.

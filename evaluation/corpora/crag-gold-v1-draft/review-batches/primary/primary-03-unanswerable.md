@@ -38,11 +38,11 @@ Reviewer decision (complete the companion JSONL record):
 ## ar-unanswerable-02
 
 - Language: `ar`
-- Question: ماذا حدث بعد فترة التقرير؟
+- Question: ما النتائج التشغيلية المسجلة في الربع التالي لفترة التقرير؟
 - Proposed outcome: `INSUFFICIENT`
 - Proposed correction required: `false`
 - Absence scope: `all_case_sources`
-- Missing information: الأحداث اللاحقة لفترة التقرير غير موجودة.
+- Missing information: النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.
 
 Sources:
 
@@ -50,7 +50,7 @@ Sources:
 
 Proposed atomic claims:
 
-- `ar-unanswerable-02-claim-1` (`absent`): الأحداث اللاحقة لفترة التقرير غير موجودة.
+- `ar-unanswerable-02-claim-1` (`absent`): النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.
 
 Proposed evidence anchors:
 
@@ -193,11 +193,11 @@ Reviewer decision (complete the companion JSONL record):
 ## en-unanswerable-02
 
 - Language: `en`
-- Question: What happened after the reporting period?
+- Question: What operational results were recorded in the quarter following the reporting period?
 - Proposed outcome: `INSUFFICIENT`
 - Proposed correction required: `false`
 - Absence scope: `all_case_sources`
-- Missing information: Events after the reporting period are absent.
+- Missing information: Operational results for the quarter following the reporting period are absent.
 
 Sources:
 
@@ -205,7 +205,7 @@ Sources:
 
 Proposed atomic claims:
 
-- `en-unanswerable-02-claim-1` (`absent`): Events after the reporting period are absent.
+- `en-unanswerable-02-claim-1` (`absent`): Operational results for the quarter following the reporting period are absent.
 
 Proposed evidence anchors:
 

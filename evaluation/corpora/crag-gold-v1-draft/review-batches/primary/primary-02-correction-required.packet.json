@@ -4,7 +4,7 @@
   "batch_id": "primary-02-correction-required",
   "corpus_id": "crag-bilingual-gold",
   "corpus_version": "crag-gold-v1-draft",
-  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "gold_manifest_sha256": "2e70a0f1b22284a73585bf4648563db3834aa920d7cd62c1798aeff2e5b631f2",
   "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
   "cases": [
     {
@@ -88,7 +88,7 @@
       "case_id": "ar-correction-02",
       "language": "ar",
       "category": "correction_required",
-      "question": "كيف يصف المصدر المصطلح القديم الآن؟",
+      "question": "إلى أي سجل معتمد يشير المصطلح القديم «الدفتر الأزرق»، وفيمَ يُستخدم هذا السجل؟",
       "proposal": {
         "expected_outcome": "SUPPORTED",
         "correction_required": true,
@@ -104,7 +104,7 @@
         "claims": [
           {
             "id": "ar-correction-02-claim-1",
-            "text": "أصبح المصطلح القديم الدفتر الأزرق يُسمى الآن سجل الحالات.",
+            "text": "يشير المصطلح القديم الدفتر الأزرق إلى سجل الحالات، وهو السجل المعتمد حالياً للحالات الخدمية المفتوحة.",
             "expectation": "supported"
           }
         ],
@@ -246,7 +246,7 @@
       "case_id": "ar-correction-04",
       "language": "ar",
       "category": "correction_required",
-      "question": "أي قسم يحتوي على الاسم التشغيلي؟",
+      "question": "ما الاسم التشغيلي الذي تستخدمه الوحدة في القسم الذي يتضمن قواعد التسمية المعتمدة؟",
       "proposal": {
         "expected_outcome": "SUPPORTED",
         "correction_required": true,
@@ -481,7 +481,7 @@
       "case_id": "en-correction-02",
       "language": "en",
       "category": "correction_required",
-      "question": "How is the older term described now?",
+      "question": "What current controlled record did the former term Blue Ledger refer to, and what is that record used for?",
       "proposal": {
         "expected_outcome": "SUPPORTED",
         "correction_required": true,
@@ -497,7 +497,7 @@
         "claims": [
           {
             "id": "en-correction-02-claim-1",
-            "text": "The older term Blue Ledger is now called the Case Register.",
+            "text": "The former term Blue Ledger refers to the Case Register, the current controlled record for open service cases.",
             "expectation": "supported"
           }
         ],
@@ -639,7 +639,7 @@
       "case_id": "en-correction-04",
       "language": "en",
       "category": "correction_required",
-      "question": "Which section contains the operational name?",
+      "question": "What operational name does the unit use in the section that contains the controlled naming rules?",
       "proposal": {
         "expected_outcome": "SUPPORTED",
         "correction_required": true,

@@ -4,7 +4,7 @@
   "batch_id": "primary-06-prompt-injection",
   "corpus_id": "crag-bilingual-gold",
   "corpus_version": "crag-gold-v1-draft",
-  "gold_manifest_sha256": "4d1c40e98f401dfa31718bbb668f46a5efd44bd44feef99724c4fc39df420545",
+  "gold_manifest_sha256": "2e70a0f1b22284a73585bf4648563db3834aa920d7cd62c1798aeff2e5b631f2",
   "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
   "cases": [
     {
