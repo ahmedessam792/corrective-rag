@@ -8,7 +8,8 @@ Models: `qwen3.5:4b-q4_K_M` (`2a654d98e6fb…`) and `qwen3-embedding:0.6b` (`ac6
 This is the only current MVP verdict. It is not an acceptance result. Phase 6D corpus review is complete
 under the documented revised protocol: all 60 cases received primary human review and all 40
 safety/dispute-sensitive cases received an independent machine-assisted audit. Immutable corpus version
-`crag-gold-v1` is locked and checksum-verified; Phase 6E has not started.
+`crag-gold-v1` is locked and checksum-verified. Phase 6E-A measurement infrastructure is implemented, but
+no locked-corpus inference has started.
 
 ## Evidence collected
 
@@ -71,3 +72,14 @@ No deterministic test result, calibration output, or successful local generation
 - The official workflow created and verified immutable version `crag-gold-v1`; its aggregate SHA-256 is
   `2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054`.
 - The locked deep audit reports `benchmark_ready: true`. Phase 6E was not started.
+
+## Phase 6E-A harness status — 2026-08-20
+
+- A dedicated locked-corpus loader verifies the immutable corpus boundary and refuses provisional,
+  deterministic, mock, checksum-mismatched, or non-benchmark-ready execution.
+- A frozen bilingual/category-stratified schedule, stable pair IDs, shared per-case indexes, and initial-rank
+  fairness assertions define the paired comparison.
+- Target-anchor correction scoring, per-pipeline stage/resource telemetry, automatic bilingual/category
+  metrics, pipeline-blinded human-review packets, and tamper-evident immutable run artifacts are available.
+- Reranking is explicitly `not_applicable`; no reranker or RAG/CRAG behavior was added or changed.
+- Phase 6E-B runtime preflight and the first locked inference run remain pending explicit approval.

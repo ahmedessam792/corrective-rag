@@ -41,6 +41,29 @@ runtime manifests, all source bytes, primary reviews, and the empty adjudication
 7. Freeze exactly one configuration, audit the 60-case manifest, and run it once with counterbalanced pipeline order.
 8. Conduct blinded bilingual claim/citation review, complete operational evidence, and generate the verdict report.
 
+## Phase 6E-A locked harness boundary
+
+The locked runner is a separate, non-provisional execution mode. Before any inference it verifies the lock
+status, `benchmark_ready`, the required aggregate SHA-256, every protected checksum, source/anchor
+integrity, and runtime/gold manifest separation. It then requires the concrete Ollama runtime and embedder;
+deterministic and mock implementations are rejected.
+
+Each stable case pair shares a workspace and index. Its normal-RAG and CRAG initial retrieval rankings must
+match when both retrievals complete. The seed-42 schedule counterbalances pipeline order by bilingual case
+pair and category. Failures remain recorded in the 120-run denominator. The harness does not expose
+options for subsets, provisional labels, tuning, or automatic retries. A clean committed Git worktree is
+required and is checked again before artifact sealing.
+
+Automatic results are emitted overall, by English/Arabic, and by all six categories. They include Recall@6,
+MRR, nDCG@6, initial/final target rank, correction trigger/uplift/harm, evidence-verifier confusion and false
+`SUPPORTED`, disposition/refusal/partial/contradiction/injection outcomes, structural citation safety,
+latency distributions, TTFT, tokens/second, RAM/VRAM, and call counts. Semantic answer, claim-support, and
+citation judgments remain human work in pipeline-blinded bilingual packets.
+
+Completed artifacts are content-addressed. Any changed, missing, or added protected run file makes
+`locked-run-verify` fail, and an existing completion manifest cannot be resealed or silently overwritten.
+Phase 6E-A validates this machinery without running `locked-run`.
+
 ## Calibration experiment ladder
 
 Change one factor at a time and retain all failed traces.

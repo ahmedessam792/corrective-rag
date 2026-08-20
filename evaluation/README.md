@@ -111,8 +111,8 @@ Any legitimate post-lock change requires a new version;
 previous locked versions stay intact. Review packets and unfilled templates are excluded from the locked
 release; signed review and adjudication records remain. Do not run the final benchmark against the draft corpus.
 
-Current Phase 6D release: `evaluation/corpora/crag-gold-v1`, checksum-verified and benchmark-ready. Phase 6E
-has not started.
+Current Phase 6D release: `evaluation/corpora/crag-gold-v1`, checksum-verified and benchmark-ready. The
+Phase 6E-A locked benchmark harness is implemented; no locked-corpus inference has been run.
 
 Audit readiness:
 
@@ -142,6 +142,48 @@ For each case, the harness counterbalances:
 Both paths use the same prebuilt index, embedding model, candidate limit, context budget, answer model, seed, and generation configuration. Outputs are written under ignored `.evaluation-runs/` directories. Each run contains model/config digests, cold-start samples, stage/token telemetry, pre/post rankings, RAM/VRAM samples, predictions, mechanical metrics, and human-review templates.
 
 Never rerun a case because its answer was unfavorable. Repeat only a documented infrastructure-corrupted run. Do not tune after viewing the locked 60-case results.
+
+## Locked Phase 6E benchmark harness
+
+Validate the locked corpus and frozen counterbalanced schedule without contacting the model runtime:
+
+```powershell
+.venv\Scripts\python.exe validate.py locked-benchmark-validate `
+  --corpus evaluation\corpora\crag-gold-v1 `
+  --expected-corpus-sha256 2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054
+```
+
+After a separately approved Phase 6E-B runtime preflight, the full locked command is:
+
+```powershell
+.venv\Scripts\python.exe validate.py locked-run `
+  --corpus evaluation\corpora\crag-gold-v1 `
+  --expected-corpus-sha256 2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054 `
+  --output .evaluation-runs\locked
+```
+
+`locked-run` has no provisional or case-subset option. It rejects deterministic/mock runtimes, requires a
+checksum-valid locked and benchmark-ready corpus, uses one index per paired case, and aborts on unequal
+initial rankings when both pipelines retrieved successfully. The 60-case schedule is frozen and balanced
+30/30 overall and 5/5 inside every category. Correction scoring uses target anchors; bridge anchors are
+retained as trace metadata but cannot create correction uplift. Execution also requires a clean committed
+Git worktree and fails if that Git state changes during the run.
+The locked command also refuses any departure from the documented model tags, context/output limits,
+CPU-only offload setting, correction bound, context-chunk count, repair bound, keep-alive, or seed-42
+schedule; experiments belong outside this first locked baseline.
+
+A completed run is sealed with `completion-manifest.json` and `artifact-checksums.sha256`. Verify it with:
+
+```powershell
+.venv\Scripts\python.exe validate.py locked-run-verify --run-dir .evaluation-runs\locked\RUN_ID
+```
+
+The artifact contains the corpus/config/runtime snapshots, frozen schedule, workspace/index, paired raw
+outputs, rankings, correction traces, verifier and citation records, stage/call/resource telemetry,
+errors/retries, automatic metrics, and six bilingual pipeline-blinded review batches. Keep
+`pipeline-blind-map.evaluator-only.json` away from human reviewers until judgments are complete. Review
+templates contain placeholders only; the harness never creates human judgments. Reranking is reported as
+`not_applicable` because this architecture has no reranker.
 
 ## Human adjudication and verdict
 

@@ -36,6 +36,23 @@ from crag.database import Database
 from crag.domain import AnswerResult, Citation, Claim
 from crag.evaluation import BenchmarkCase, audit_manifest, correction_metrics, load_manifest, retrieval_metrics
 from crag.ingestion import IngestionService, OllamaEmbedder
+from crag.locked_benchmark import (
+    LOCKED_SCHEDULE_SEED,
+    AnchorChunkBinding,
+    assert_locked_baseline_configuration,
+    assert_paired_initial_retrieval,
+    assert_real_locked_runtime,
+    attribute_crag_telemetry,
+    attribute_normal_telemetry,
+    build_counterbalanced_schedule,
+    correction_target_anchor_ids,
+    generate_blinded_review_packets,
+    load_locked_benchmark_corpus,
+    locked_automatic_metrics,
+    map_anchor_chunks,
+    seal_run_artifacts,
+    verify_run_artifacts,
+)
 from crag.retrieval import HybridRetriever
 from crag.runtime import Draft, OllamaRuntime
 from crag.workflow import CragWorkflow
@@ -59,12 +76,31 @@ class CaseRunRecord(BaseModel):
     invalid_draft_citations: int = 0
     events: list[dict[str, Any]] = Field(default_factory=list)
     runtime_calls: list[dict[str, Any]] = Field(default_factory=list)
+    pair_id: str | None = None
+    verifier_label: str | None = None
+    correction_triggered: bool = False
+    correction_count: int = 0
+    anchor_bindings: list[AnchorChunkBinding] = Field(default_factory=list)
+    target_anchor_ids: list[str] = Field(default_factory=list)
+    scoring_chunk_ids: list[str] = Field(default_factory=list)
+    gold_chunk_relevance: dict[str, int] = Field(default_factory=dict)
+    stage_latency_seconds: dict[str, float | None] = Field(default_factory=dict)
+    generation_ttft_seconds: float | None = None
+    generation_tokens_per_second: float | None = None
+    peak_system_ram_mb: float | None = None
+    peak_gpu_vram_mb: float | None = None
+    model_call_count: int = 0
+    embedding_call_count: int = 0
+    rewrite_call_count: int = 0
+    structured_retry_count: int = 0
 
 
 class ResourceSample(BaseModel):
     elapsed_seconds: float
     system_ram_used_mb: float | None = None
     gpu_vram_used_mb: float | None = None
+    case_id: str | None = None
+    pipeline: Literal["normal_rag", "crag"] | None = None
 
 
 class ClaimJudgment(BaseModel):
@@ -166,6 +202,16 @@ class ResourceSampler:
         self.samples: list[ResourceSample] = []
         self._stop = asyncio.Event()
         self._started = 0.0
+        self._case_id: str | None = None
+        self._pipeline: Literal["normal_rag", "crag"] | None = None
+
+    def set_context(self, case_id: str, pipeline: Literal["normal_rag", "crag"]) -> None:
+        self._case_id = case_id
+        self._pipeline = pipeline
+
+    def clear_context(self) -> None:
+        self._case_id = None
+        self._pipeline = None
 
     async def run(self) -> None:
         self._started = time.monotonic()
@@ -177,6 +223,8 @@ class ResourceSampler:
                     elapsed_seconds=time.monotonic() - self._started,
                     system_ram_used_mb=ram,
                     gpu_vram_used_mb=vram,
+                    case_id=self._case_id,
+                    pipeline=self._pipeline,
                 )
             )
             with suppress(TimeoutError):
@@ -216,6 +264,7 @@ def _environment_snapshot(settings: Settings) -> dict[str, Any]:
             "seed": settings.ollama_seed,
             "gpu_layers": settings.ollama_gpu_layers,
             "keep_alive": settings.ollama_keep_alive,
+            "timeout_seconds": settings.ollama_timeout_seconds,
             "max_corrections": settings.max_corrections,
             "context_chunks": settings.context_chunks,
         },
@@ -298,10 +347,19 @@ async def _normal_rag(
     relevant_ids: list[str],
     order: int,
     context_chunks: int,
+    *,
+    pair_id: str | None = None,
+    anchor_bindings: list[AnchorChunkBinding] | None = None,
+    target_anchor_ids: list[str] | None = None,
+    scoring_chunk_ids: list[str] | None = None,
+    gold_chunk_relevance: dict[str, int] | None = None,
 ) -> CaseRunRecord:
     started = time.monotonic()
+    retrieval_seconds = 0.0
     try:
+        retrieval_started = time.monotonic()
         trace = await asyncio.to_thread(retriever.retrieve_with_trace, workspace_id, case.question, 12)
+        retrieval_seconds = time.monotonic() - retrieval_started
         embedding_calls = retriever.embedder.drain_telemetry()
         selected = trace.results[:context_chunks]
         draft: Draft = await runtime.draft(case.question, selected)
@@ -329,13 +387,16 @@ async def _normal_rag(
                 refusal_reason="The normal-RAG draft contained no structurally valid cited claim.",
             )
             status = "refused"
+        runtime_calls = [*embedding_calls, *[item.model_dump() for item in runtime.drain_telemetry()]]
+        wall_seconds = time.monotonic() - started
+        telemetry = attribute_normal_telemetry(runtime_calls, retrieval_seconds, wall_seconds)
         return CaseRunRecord(
             case_id=case.id,
             language=case.language,
             category=case.category,
             pipeline="normal_rag",
             order=order,
-            wall_seconds=time.monotonic() - started,
+            wall_seconds=wall_seconds,
             result=result,
             status=status,
             initial_ranking=trace.fused_ranking,
@@ -344,23 +405,38 @@ async def _normal_rag(
             lexical_ranking=trace.lexical_ranking,
             relevant_chunk_ids=relevant_ids,
             invalid_draft_citations=invalid,
-            runtime_calls=[*embedding_calls, *[item.model_dump() for item in runtime.drain_telemetry()]],
+            runtime_calls=runtime_calls,
+            pair_id=pair_id,
+            anchor_bindings=anchor_bindings or [],
+            target_anchor_ids=target_anchor_ids or [],
+            scoring_chunk_ids=scoring_chunk_ids or relevant_ids,
+            gold_chunk_relevance=gold_chunk_relevance or {},
+            **telemetry.model_dump(),
         )
     except Exception as exc:
+        runtime_calls = [
+            *retriever.embedder.drain_telemetry(),
+            *[item.model_dump() for item in runtime.drain_telemetry()],
+        ]
+        wall_seconds = time.monotonic() - started
+        telemetry = attribute_normal_telemetry(runtime_calls, retrieval_seconds, wall_seconds)
         return CaseRunRecord(
             case_id=case.id,
             language=case.language,
             category=case.category,
             pipeline="normal_rag",
             order=order,
-            wall_seconds=time.monotonic() - started,
+            wall_seconds=wall_seconds,
             status="failed",
             error=f"{type(exc).__name__}: {exc}",
             relevant_chunk_ids=relevant_ids,
-            runtime_calls=[
-                *retriever.embedder.drain_telemetry(),
-                *[item.model_dump() for item in runtime.drain_telemetry()],
-            ],
+            runtime_calls=runtime_calls,
+            pair_id=pair_id,
+            anchor_bindings=anchor_bindings or [],
+            target_anchor_ids=target_anchor_ids or [],
+            scoring_chunk_ids=scoring_chunk_ids or relevant_ids,
+            gold_chunk_relevance=gold_chunk_relevance or {},
+            **telemetry.model_dump(),
         )
 
 
@@ -371,6 +447,12 @@ async def _crag(
     workspace_id: str,
     relevant_ids: list[str],
     order: int,
+    *,
+    pair_id: str | None = None,
+    anchor_bindings: list[AnchorChunkBinding] | None = None,
+    target_anchor_ids: list[str] | None = None,
+    scoring_chunk_ids: list[str] | None = None,
+    gold_chunk_relevance: dict[str, int] | None = None,
 ) -> CaseRunRecord:
     started = time.monotonic()
     run = database.create_run(str(uuid4()), workspace_id, case.question)
@@ -381,13 +463,16 @@ async def _crag(
     runtime_calls = [event["data"] for event in events if event["kind"] == "runtime_call_completed"]
     initial = retrieval_events[0]["data"].get("fused_ranking", []) if retrieval_events else []
     final = retrieval_events[-1]["data"].get("fused_ranking", []) if retrieval_events else []
+    verification_events = [event for event in events if event["kind"] == "evidence_verified"]
+    wall_seconds = time.monotonic() - started
+    telemetry = attribute_crag_telemetry(events, runtime_calls, wall_seconds)
     return CaseRunRecord(
         case_id=case.id,
         language=case.language,
         category=case.category,
         pipeline="crag",
         order=order,
-        wall_seconds=time.monotonic() - started,
+        wall_seconds=wall_seconds,
         result=completed.result if completed else None,
         status=completed.status if completed else "failed",
         error=completed.error if completed else "Persisted run disappeared.",
@@ -398,6 +483,15 @@ async def _crag(
         relevant_chunk_ids=relevant_ids,
         events=events,
         runtime_calls=runtime_calls,
+        pair_id=pair_id,
+        verifier_label=(verification_events[-1]["data"].get("label") if verification_events else None),
+        correction_triggered=any(event["kind"] == "query_rewritten" for event in events),
+        correction_count=completed.correction_count if completed else 0,
+        anchor_bindings=anchor_bindings or [],
+        target_anchor_ids=target_anchor_ids or [],
+        scoring_chunk_ids=scoring_chunk_ids or relevant_ids,
+        gold_chunk_relevance=gold_chunk_relevance or {},
+        **telemetry.model_dump(),
     )
 
 
@@ -972,6 +1066,407 @@ async def run_benchmark(
     return output_dir
 
 
+def _locked_case_adapter(runtime_case: Any, gold: Any) -> BenchmarkCase:
+    disposition = {
+        "SUPPORTED": "answered",
+        "PARTIAL": "partial",
+        "INSUFFICIENT": "refused",
+        "CONTRADICTORY": "conflicting",
+    }[gold.expected_outcome.value]
+    filenames = [Path(source.relative_path).name for source in runtime_case.sources]
+    return BenchmarkCase(
+        id=runtime_case.id,
+        language=gold.language,
+        category=gold.category,
+        question=runtime_case.question,
+        fixture=filenames[0],
+        additional_fixtures=filenames[1:],
+        label_status="approved",
+        expected_disposition=disposition,
+        reviewer="locked-corpus",
+    )
+
+
+def _resource_peaks(
+    samples: list[ResourceSample], case_id: str, pipeline: Literal["normal_rag", "crag"]
+) -> tuple[float | None, float | None]:
+    matching = [sample for sample in samples if sample.case_id == case_id and sample.pipeline == pipeline]
+    ram = max((sample.system_ram_used_mb for sample in matching if sample.system_ram_used_mb is not None), default=None)
+    vram = max((sample.gpu_vram_used_mb for sample in matching if sample.gpu_vram_used_mb is not None), default=None)
+    return ram, vram
+
+
+def _write_json(path: Path, value: Any) -> None:
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+
+
+def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for value in values:
+            handle.write(json.dumps(value, ensure_ascii=False) + "\n")
+
+
+def _benchmark_error_kind(record: CaseRunRecord) -> str | None:
+    if record.status != "failed" and record.status != "cancelled":
+        return None
+    value = (record.error or record.status).lower()
+    if "timeout" in value:
+        return "timeout"
+    if "schema" in value or "structured" in value or "json" in value:
+        return "parser_schema_error"
+    if "retriev" in value or "embedding" in value:
+        return "retrieval_failure"
+    if "cancel" in value:
+        return "cancellation"
+    if "ollama" in value or "model" in value or "http" in value:
+        return "model_error"
+    return "other_runtime_error"
+
+
+def _locked_record_views(records: list[CaseRunRecord]) -> dict[str, list[dict[str, Any]]]:
+    return {
+        "raw-outputs.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "status": item.status,
+                "result": item.result.model_dump(mode="json") if item.result else None,
+                "error": item.error,
+            }
+            for item in records
+        ],
+        "retrieval-rankings.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "initial": item.initial_ranking,
+                "final": item.final_ranking,
+                "dense": item.dense_ranking,
+                "lexical": item.lexical_ranking,
+                "target_anchor_ids": item.target_anchor_ids,
+                "anchor_bindings": [binding.model_dump(mode="json") for binding in item.anchor_bindings],
+            }
+            for item in records
+        ],
+        "correction-traces.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "triggered": item.correction_triggered,
+                "correction_count": item.correction_count,
+                "events": [
+                    event
+                    for event in item.events
+                    if event["kind"]
+                    in {
+                        "evaluation_completed",
+                        "evaluation_weak",
+                        "query_rewritten",
+                        "retrieval_retry_started",
+                        "retrieval_completed",
+                    }
+                ],
+            }
+            for item in records
+        ],
+        "verifier-decisions.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "evidence_verifier_label": item.verifier_label,
+                "claim_verification": [
+                    event["data"] for event in item.events if event["kind"] == "claim_verification_completed"
+                ],
+            }
+            for item in records
+        ],
+        "citations.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "citations": [
+                    citation.model_dump(mode="json")
+                    for citation in (item.result.citations if item.result else [])
+                ],
+                "claims": [claim.model_dump(mode="json") for claim in (item.result.claims if item.result else [])],
+                "invalid_draft_citations": item.invalid_draft_citations,
+            }
+            for item in records
+        ],
+        "telemetry.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "wall_seconds": item.wall_seconds,
+                "stage_latency_seconds": item.stage_latency_seconds,
+                "generation_ttft_seconds": item.generation_ttft_seconds,
+                "generation_tokens_per_second": item.generation_tokens_per_second,
+                "peak_system_ram_mb": item.peak_system_ram_mb,
+                "peak_gpu_vram_mb": item.peak_gpu_vram_mb,
+                "model_call_count": item.model_call_count,
+                "embedding_call_count": item.embedding_call_count,
+                "rewrite_call_count": item.rewrite_call_count,
+                "runtime_calls": item.runtime_calls,
+            }
+            for item in records
+        ],
+        "errors-retries.jsonl": [
+            {
+                "pair_id": item.pair_id,
+                "case_id": item.case_id,
+                "pipeline": item.pipeline,
+                "status": item.status,
+                "error": item.error,
+                "error_kind": _benchmark_error_kind(item),
+                "structured_retry_count": item.structured_retry_count,
+                "retry_or_error_calls": [
+                    call
+                    for call in item.runtime_calls
+                    if int(call.get("repair_attempt") or 0) > 0 or call.get("error")
+                ],
+            }
+            for item in records
+        ],
+    }
+
+
+async def run_locked_benchmark(
+    corpus_path: Path,
+    output_root: Path,
+    settings: Settings,
+    *,
+    expected_corpus_sha256: str,
+    seed: int = LOCKED_SCHEDULE_SEED,
+) -> Path:
+    """Execute an exact, non-provisional 60-case locked paired benchmark."""
+    assert_locked_baseline_configuration(settings, seed)
+    initial_git_head = _command(["git", "rev-parse", "HEAD"])
+    initial_git_status = _command(["git", "status", "--porcelain"])
+    if not initial_git_head or initial_git_status:
+        raise RuntimeError("Locked benchmarks require a clean, committed Git worktree")
+    bundle = load_locked_benchmark_corpus(
+        corpus_path,
+        expected_aggregate_sha256=expected_corpus_sha256,
+        verify_documents=True,
+    )
+    if len(bundle.runtime_cases) != 60:
+        raise RuntimeError(f"Locked benchmark requires exactly 60 cases, found {len(bundle.runtime_cases)}")
+    schedule = build_counterbalanced_schedule(bundle, seed)
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{uuid4().hex[:8]}"
+    output_dir = output_root / run_id
+    output_dir.mkdir(parents=True, exist_ok=False)
+    workspace_dir = output_dir / "workspace"
+    database = Database(workspace_dir / "crag.sqlite3")
+    embedder = _embedder(settings)
+    runtime = _runtime(settings)
+    assert_real_locked_runtime(settings, runtime, embedder)
+    retriever = HybridRetriever(database, embedder)
+    workflow = CragWorkflow(
+        database,
+        retriever,
+        runtime,
+        max_corrections=settings.max_corrections,
+        context_chunks=settings.context_chunks,
+    )
+    sampler = ResourceSampler()
+    sampler_task = asyncio.create_task(sampler.run())
+    records: list[CaseRunRecord] = []
+    indexing_telemetry: list[dict[str, Any]] = []
+    state_path = output_dir / "run-state.json"
+    _write_json(
+        state_path,
+        {"run_id": run_id, "status": "running", "started_at": datetime.now(UTC).isoformat()},
+    )
+    try:
+        environment = _environment_snapshot(settings)
+        environment["models"] = await _ollama_model_snapshot(settings)
+        health = await runtime.health()
+        if not health.ready:
+            raise RuntimeError(health.detail)
+        _write_json(output_dir / "model-runtime.json", environment)
+        _write_json(
+            output_dir / "benchmark-configuration.json",
+            {
+                "run_id": run_id,
+                "mode": "locked_paired_normal_rag_vs_crag",
+                "provisional": False,
+                "seed": seed,
+                "corpus_path": str(corpus_path.resolve()),
+                "corpus_version": bundle.version,
+                "corpus_aggregate_sha256": bundle.aggregate_sha256,
+                "retrieval_candidate_count": 12,
+                "answer_context_chunks": settings.context_chunks,
+                "reranking": "not_applicable",
+                "max_corrections": settings.max_corrections,
+                "settings": settings.model_dump(mode="json"),
+            },
+        )
+        _write_json(
+            output_dir / "corpus-integrity.json",
+            {
+                "version": bundle.version,
+                "aggregate_sha256": bundle.aggregate_sha256,
+                "checksum_verified": True,
+                "audit": bundle.audit,
+            },
+        )
+        _write_json(
+            output_dir / "frozen-schedule.json",
+            {"seed": seed, "entries": [entry.model_dump(mode="json") for entry in schedule]},
+        )
+        ingestion = IngestionService(database, workspace_dir / "uploads", settings.max_upload_mb, embedder)
+        runtime_by_id = {case.id: case for case in bundle.runtime_cases}
+        for entry in schedule:
+            runtime_case = runtime_by_id[entry.case_id]
+            gold = bundle.gold_by_id[entry.case_id]
+            benchmark_case = _locked_case_adapter(runtime_case, gold)
+            workspace = database.create_workspace(str(uuid4()), f"locked-{run_id}-{entry.case_id}")
+            document_ids_by_source: dict[str, str] = {}
+            for runtime_source in runtime_case.sources:
+                source_path = bundle.root / runtime_source.relative_path
+                document = await asyncio.to_thread(
+                    ingestion.ingest,
+                    workspace_id=workspace.id,
+                    filename=source_path.name,
+                    content=source_path.read_bytes(),
+                    ocr_requested=source_path.suffix.lower() == ".pdf",
+                )
+                if document.status != "ready":
+                    raise RuntimeError(
+                        f"Locked source ingestion failed for {entry.case_id}/{runtime_source.source_id}: "
+                        f"{document.status}: {document.error}"
+                    )
+                document_ids_by_source[runtime_source.source_id] = document.id
+            indexing_telemetry.append(
+                {
+                    "case_id": entry.case_id,
+                    "pair_id": entry.pair_id,
+                    "calls": embedder.drain_telemetry(),
+                }
+            )
+            bindings = map_anchor_chunks(
+                database,
+                workspace.id,
+                gold,
+                bundle.source_by_id,
+                document_ids_by_source,
+            )
+            unresolved = [binding.anchor_id for binding in bindings if not binding.chunk_ids]
+            if unresolved:
+                raise RuntimeError(f"Locked evidence anchors did not resolve for {entry.case_id}: {unresolved}")
+            target_ids = sorted(correction_target_anchor_ids(gold))
+            target_bindings = [binding for binding in bindings if binding.anchor_id in target_ids]
+            scoring_ids = sorted({chunk_id for binding in target_bindings for chunk_id in binding.chunk_ids})
+            relevance: dict[str, int] = {}
+            for binding in target_bindings:
+                for chunk_id in binding.chunk_ids:
+                    relevance[chunk_id] = max(relevance.get(chunk_id, 0), binding.relevance)
+            pair_records: list[CaseRunRecord] = []
+            for position, pipeline in enumerate(entry.pipeline_order, start=1):
+                sampler.set_context(entry.case_id, pipeline)
+                if pipeline == "normal_rag":
+                    record = await _normal_rag(
+                        benchmark_case,
+                        retriever,
+                        runtime,
+                        workspace.id,
+                        scoring_ids,
+                        position,
+                        settings.context_chunks,
+                        pair_id=entry.pair_id,
+                        anchor_bindings=bindings,
+                        target_anchor_ids=target_ids,
+                        scoring_chunk_ids=scoring_ids,
+                        gold_chunk_relevance=relevance,
+                    )
+                else:
+                    record = await _crag(
+                        benchmark_case,
+                        database,
+                        workflow,
+                        workspace.id,
+                        scoring_ids,
+                        position,
+                        pair_id=entry.pair_id,
+                        anchor_bindings=bindings,
+                        target_anchor_ids=target_ids,
+                        scoring_chunk_ids=scoring_ids,
+                        gold_chunk_relevance=relevance,
+                    )
+                sampler.clear_context()
+                ram, vram = _resource_peaks(sampler.samples, entry.case_id, pipeline)
+                record.peak_system_ram_mb = ram
+                record.peak_gpu_vram_mb = vram
+                pair_records.append(record)
+                records.append(record)
+                with (output_dir / "predictions.jsonl").open("a", encoding="utf-8", newline="\n") as handle:
+                    handle.write(record.model_dump_json() + "\n")
+            assert_paired_initial_retrieval(pair_records)
+
+        metrics = locked_automatic_metrics(records, bundle.gold_by_id)
+        if _command(["git", "rev-parse", "HEAD"]) != initial_git_head or _command(
+            ["git", "status", "--porcelain"]
+        ):
+            raise RuntimeError("Git state changed during the locked benchmark")
+        _write_json(output_dir / "automatic-metrics.json", metrics)
+        for filename, rows in _locked_record_views(records).items():
+            _write_jsonl(output_dir / filename, rows)
+        _write_jsonl(output_dir / "indexing-telemetry.jsonl", indexing_telemetry)
+        generate_blinded_review_packets(output_dir / "human-review", records, bundle, seed=seed)
+        ps_command = _ollama_command("ps")
+        environment["ollama_ps_after"] = _command(ps_command) if ps_command else None
+        _write_json(output_dir / "model-runtime.json", environment)
+        _write_json(
+            state_path,
+            {
+                "run_id": run_id,
+                "status": "completed",
+                "started_at": json.loads(state_path.read_text(encoding="utf-8"))["started_at"],
+                "completed_at": datetime.now(UTC).isoformat(),
+                "pipeline_runs": len(records),
+                "failed_pipeline_runs": sum(record.status == "failed" for record in records),
+            },
+        )
+    except Exception as exc:
+        _write_json(
+            state_path,
+            {
+                "run_id": run_id,
+                "status": "failed",
+                "failed_at": datetime.now(UTC).isoformat(),
+                "error": f"{type(exc).__name__}: {exc}",
+                "pipeline_runs_recorded": len(records),
+            },
+        )
+        raise
+    finally:
+        sampler.clear_context()
+        sampler.stop()
+        await sampler_task
+        _write_jsonl(output_dir / "resources.jsonl", [sample.model_dump(mode="json") for sample in sampler.samples])
+        database.close()
+    seal_run_artifacts(
+        output_dir,
+        {
+            "run_id": run_id,
+            "status": "completed",
+            "corpus_version": bundle.version,
+            "corpus_aggregate_sha256": bundle.aggregate_sha256,
+            "git_commit": initial_git_head,
+            "expected_pipeline_runs": 120,
+            "recorded_pipeline_runs": len(records),
+            "failed_pipeline_runs": sum(record.status == "failed" for record in records),
+        },
+    )
+    return output_dir
+
+
 def _audit_command(args: argparse.Namespace) -> int:
     cases = load_manifest(args.manifest)
     audit = audit_manifest(cases, args.fixtures)
@@ -1041,6 +1536,71 @@ def _corpus_verify_lock_command(args: argparse.Namespace) -> int:
     return 0 if not errors else 2
 
 
+def _locked_benchmark_validate_command(args: argparse.Namespace) -> int:
+    settings = Settings()
+    assert_locked_baseline_configuration(settings, LOCKED_SCHEDULE_SEED)
+    bundle = load_locked_benchmark_corpus(
+        args.corpus,
+        expected_aggregate_sha256=args.expected_corpus_sha256,
+        verify_documents=True,
+    )
+    schedule = build_counterbalanced_schedule(bundle, LOCKED_SCHEDULE_SEED)
+    payload = {
+        "valid": True,
+        "inference_performed": False,
+        "corpus_version": bundle.version,
+        "corpus_aggregate_sha256": bundle.aggregate_sha256,
+        "cases": len(bundle.runtime_cases),
+        "pipeline_runs": len(schedule) * 2,
+        "normal_rag_first": sum(entry.pipeline_order[0] == "normal_rag" for entry in schedule),
+        "crag_first": sum(entry.pipeline_order[0] == "crag" for entry in schedule),
+        "schedule_seed": LOCKED_SCHEDULE_SEED,
+        "frozen_baseline_configuration": {
+            "runtime": settings.runtime,
+            "ollama_url": settings.ollama_url,
+            "chat_model": settings.chat_model,
+            "embed_model": settings.embed_model,
+            "context_size": settings.ollama_context_size,
+            "output_tokens": settings.ollama_output_tokens,
+            "generation_seed": settings.ollama_seed,
+            "gpu_layers": settings.ollama_gpu_layers,
+            "keep_alive": settings.ollama_keep_alive,
+            "timeout_seconds": settings.ollama_timeout_seconds,
+            "structured_repair_attempts": settings.structured_repair_attempts,
+            "max_corrections": settings.max_corrections,
+            "context_chunks": settings.context_chunks,
+            "reranking": "not_applicable",
+        },
+        "schedule_sha256": hashlib.sha256(
+            json.dumps([entry.model_dump(mode="json") for entry in schedule], sort_keys=True).encode("utf-8")
+        ).hexdigest(),
+        "audit": bundle.audit,
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _locked_run_command(args: argparse.Namespace) -> int:
+    settings = Settings()
+    output = asyncio.run(
+        run_locked_benchmark(
+            args.corpus,
+            args.output,
+            settings,
+            expected_corpus_sha256=args.expected_corpus_sha256,
+            seed=LOCKED_SCHEDULE_SEED,
+        )
+    )
+    print(output)
+    return 0
+
+
+def _locked_run_verify_command(args: argparse.Namespace) -> int:
+    errors = verify_run_artifacts(args.run_dir)
+    print(json.dumps({"valid": not errors, "errors": errors}, ensure_ascii=False, indent=2))
+    return 0 if not errors else 2
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Local CRAG validation harness")
     commands = result.add_subparsers(dest="command", required=True)
@@ -1091,6 +1651,21 @@ def parser() -> argparse.ArgumentParser:
     corpus_verify = commands.add_parser("corpus-verify-lock", help="Verify a locked corpus checksum set")
     corpus_verify.add_argument("--corpus", type=Path, required=True)
     corpus_verify.set_defaults(handler=_corpus_verify_lock_command)
+    locked_validate = commands.add_parser(
+        "locked-benchmark-validate",
+        help="Validate a locked corpus and frozen paired schedule without running inference",
+    )
+    locked_validate.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1"))
+    locked_validate.add_argument("--expected-corpus-sha256", required=True)
+    locked_validate.set_defaults(handler=_locked_benchmark_validate_command)
+    locked_run = commands.add_parser("locked-run", help="Run the non-provisional locked paired benchmark")
+    locked_run.add_argument("--corpus", type=Path, default=Path("evaluation/corpora/crag-gold-v1"))
+    locked_run.add_argument("--output", type=Path, default=Path(".evaluation-runs/locked"))
+    locked_run.add_argument("--expected-corpus-sha256", required=True)
+    locked_run.set_defaults(handler=_locked_run_command)
+    locked_verify = commands.add_parser("locked-run-verify", help="Verify a completed locked-run artifact seal")
+    locked_verify.add_argument("--run-dir", type=Path, required=True)
+    locked_verify.set_defaults(handler=_locked_run_verify_command)
     return result
 
 
