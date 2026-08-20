@@ -10,11 +10,20 @@ Required local components:
 - exact `qwen3.5:4b-q4_K_M` and `qwen3-embedding:0.6b` tags;
 - the locked Python and frontend dependencies;
 - the `docling` optional dependency for the scanned-PDF smoke gate;
-- a bilingual reviewer and a second adjudicator for disputed safety labels.
+- a bilingual primary human reviewer for all 60 cases and an independent machine-assisted safety/dispute
+  audit for the 40 partial, insufficient, contradictory, and prompt-injection cases.
 
 Use `num_ctx=8192`, `temperature=0`, seed `42`, `num_predict=1024`, thinking disabled, a 10-minute keep-alive, one correction maximum, and six answer-context chunks for the first measured configuration. Do not infer GPU offload from model size: record `ollama ps`, NVIDIA VRAM samples, RAM, paging/OOM behavior, and actual latency.
 
 Raw documents, prompts, evidence, and outputs stay in ignored local artifacts. No remote judge, cloud fallback, external telemetry, or automatic content transmission is allowed.
+
+## Phase 6D review protocol
+
+The final corpus review protocol is **60/60 Primary Human Review + 40/40 Independent Machine-Assisted
+Safety/Dispute Audit**. **No independent second-human adjudication was performed.** Machine audit findings
+are evaluator-only evidence and must never be represented as human adjudication or copied into human review
+records. The 2026-08-20 lock-readiness audit found all 40 cases semantically valid, including ten intentional
+contradictions for which the sources provide no explicit precedence or supersession rule.
 
 ## Gate sequence
 

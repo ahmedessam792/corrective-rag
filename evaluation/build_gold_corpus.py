@@ -1133,7 +1133,8 @@ def build(target: Path) -> None:
                 "adjudicated_outcome": "REPLACE",
                 "approved_anchor_ids": [],
                 "adjudicated_correction_required": case.correction.required,
-                "decision": "REPLACE",
+                "confidence": "REPLACE-WITH-HIGH-MEDIUM-OR-LOW",
+                "decision": "REPLACE-WITH-CONFIRM_PRIMARY-CHANGE_REQUIRED-OR-UNRESOLVED",
                 "notes": "REPLACE after independent inspection.",
                 "adjudicated_at": "REPLACE-WITH-ISO-8601-TIMESTAMP",
             }

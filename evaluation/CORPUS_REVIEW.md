@@ -34,19 +34,24 @@ when a bridge passage maps the question's generic, legacy, acronym, or synonymou
 controlled term needed for the target passage. Do not test or tune retrieval against these cases during
 review.
 
-## Adjudication
+## Final safety/dispute audit protocol
 
-A second person with a different stable identifier adjudicates all `PARTIAL`, `INSUFFICIENT`,
-`CONTRADICTORY`, and prompt-injection cases. Adjudication is also required for medium/low confidence,
-any requested label change, ambiguous citation support, or a `SUPPORTED` versus `INSUFFICIENT` dispute.
-The adjudicator records the original outcome, dispute or mandatory-safety reason, final outcome, final
-anchors, correction decision, and notes. Original review records are preserved.
+The final Phase 6D protocol adopted for this corpus is:
 
-Only after primary records are applied, generate the second-review packets with
-`validate.py corpus-prepare-review-batches --stage adjudication`. The command refuses missing primary
-records and unresolved `changes_required` cases. The adjudicator packet includes the original primary
-record, but the second reviewer must still inspect the source independently and use a different stable
-human identifier.
+> **60/60 Primary Human Review + 40/40 Independent Machine-Assisted Safety/Dispute Audit**
+
+**No independent second-human adjudication was performed.** The primary bilingual human reviewer made
+the accountable gold decisions for all 60 cases. A separate machine-assisted audit then re-opened the
+physical sources for every `PARTIAL`, `INSUFFICIENT`, `CONTRADICTORY`, and prompt-injection case and checked
+source absence, support, conflict resolution, injection isolation, hashes, anchors, correction flags,
+bilingual consistency, and leakage boundaries.
+
+Machine findings are evaluator-only audit evidence, not human adjudications. They must not populate
+`adjudications.jsonl`, use a human reviewer identity, or be described as second-human approval. The detailed
+advisory report and final lock-readiness audit are preserved under `evaluation/pre-review/`.
+
+The previously generated adjudication packets remain available if a future release elects to require a
+second human. They are not completed records for this corpus version.
 
 ## Approval and leakage
 
@@ -55,5 +60,8 @@ review records into `runtime_cases.jsonl`, source documents, prompts, retrieval 
 verification, or generation inputs. `corpus-apply-reviews` rejects placeholder or automation identities;
 `corpus-audit` checks review consistency and the runtime allow-list.
 
-The only Phase 6D ready verdict is `Gold corpus locked and benchmark-ready`. Until the locked checksum
-set verifies, Phase 6E must not start.
+The 2026-08-20 audit found 40/40 safety/dispute cases semantically valid, zero corpus defects, zero false
+`SUPPORTED` labels, zero integrity errors, and no leakage. Phase 6D is complete under the revised protocol.
+The corpus is eligible for locking under that protocol, but the legacy lock guard still requires explicit
+second-human records. Do not bypass it or fabricate records: align the lock gate with the documented,
+checksum-bound machine audit in a separate explicit step, then verify the locked checksum set before Phase 6E.

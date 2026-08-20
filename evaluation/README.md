@@ -27,8 +27,8 @@ Each approved versioned case includes:
 - stable source IDs and exact normalized evidence passages with source location and passage SHA-256;
 - atomic claims, including absent portions for partial cases and conflicted claims for contradictions;
 - an explicit correction-required decision with bridge and target anchors where applicable;
-- a bilingual primary review, plus independent adjudication for every partial, insufficient,
-  contradictory, and prompt-injection case and for any other disputed or uncertain case;
+- a bilingual primary human review for all 60 cases, plus an independent machine-assisted safety/dispute
+  audit for every partial, insufficient, contradictory, and prompt-injection case;
 - source provenance, binary SHA-256, and every physical fixture.
 
 ## Phase 6D corpus workflow
@@ -63,8 +63,8 @@ The current draft already includes these generated packets. Copy response templa
 working files before editing them. Regeneration is idempotent for unchanged artifacts and refuses to
 overwrite any changed packet or response file; use a new `--output` directory when preserving review work.
 
-After all 60 primary records have been completed and applied, prepare the independent adjudicator's
-packets with:
+After all 60 primary records have been completed and applied, the repository can prepare independent
+adjudication packets with:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-apply-reviews `
@@ -73,12 +73,17 @@ packets with:
 ```
 
 That command refuses to run before every required primary record exists. It includes the preserved
-primary decision and creates packets for all mandatory or uncertainty-triggered adjudications. A separate
-human must complete the response templates. The original monolithic `reviews.template.jsonl` and
-`adjudications.template.jsonl` remain available, but do not contain the evidence-rich review presentation.
+primary decision and creates packets for all mandatory or uncertainty-triggered adjudications. For this
+corpus version, the packets were used as evidence organization for an independent machine-assisted audit;
+their response templates were not completed or applied.
 
-After independent adjudication, apply the same preserved 60 primary records together with all required
-adjudication records, then regenerate the runtime boundary:
+The final Phase 6D protocol is **60/60 Primary Human Review + 40/40 Independent Machine-Assisted
+Safety/Dispute Audit**. **No independent second-human adjudication was performed.** Machine findings are
+preserved only under `evaluation/pre-review/`; they are not human review records and `adjudications.jsonl`
+remains empty.
+
+If a future corpus version uses second-human adjudication, apply the same preserved 60 primary records
+together with those human adjudication records, then regenerate the runtime boundary:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-apply-reviews `
@@ -87,7 +92,10 @@ adjudication records, then regenerate the runtime boundary:
 .venv\Scripts\python.exe validate.py corpus-compile
 ```
 
-Lock only after all 60 cases are approved and all mandatory adjudications are complete:
+The 2026-08-20 final audit found all 40 safety/dispute cases semantically valid with zero corpus defects,
+false `SUPPORTED` labels, integrity errors, or leakage. The draft is eligible for locking under the revised
+protocol. The current lock implementation still enforces the older second-human-record requirement, so it
+must be explicitly aligned with the checksum-bound machine-audit protocol before this command is run:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-lock `
@@ -96,7 +104,8 @@ Lock only after all 60 cases are approved and all mandatory adjudications are co
   --corpus evaluation\corpora\crag-gold-v1
 ```
 
-Locking never overwrites an existing directory. Any legitimate post-lock change requires a new version;
+Do not bypass the guard or manufacture adjudication records. Locking never overwrites an existing directory.
+Any legitimate post-lock change requires a new version;
 previous locked versions stay intact. Review packets and unfilled templates are excluded from the locked
 release; signed review and adjudication records remain. Do not run the final benchmark against the draft corpus.
 

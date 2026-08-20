@@ -5,10 +5,10 @@ Machine: Intel i7-8850H, 32 GB RAM, NVIDIA Quadro P600 4 GB, Windows 10 19045
 Runtime: Ollama 0.32.9  
 Models: `qwen3.5:4b-q4_K_M` (`2a654d98e6fb…`) and `qwen3-embedding:0.6b` (`ac6da0dfba84…`)
 
-This is the only current MVP verdict. It is not an acceptance result. Phase 6D now has a structurally
-complete draft corpus with all 50 primary fixtures, ten independent contradiction companions, stable
-source hashes, and resolvable evidence anchors. Human approval remains 0/60, so no locked corpus exists
-and Phase 6E is blocked.
+This is the only current MVP verdict. It is not an acceptance result. Phase 6D corpus review is complete
+under the documented revised protocol: all 60 cases received primary human review and all 40
+safety/dispute-sensitive cases received an independent machine-assisted audit. No locked corpus exists
+and Phase 6E has not started.
 
 ## Evidence collected
 
@@ -29,8 +29,8 @@ Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z
 
 | Gate | Exact evidence | Classification | Smallest next action |
 |---|---|---|---|
-| Locked normal-RAG vs CRAG comparison | 0/60 cases approved; 60/60 physical sources present and structurally valid | Evaluation | A bilingual reviewer must approve all cases and an independent adjudicator must complete the 40 mandatory safety adjudications before locking. |
-| Verifier safety | No blinded human claim labels exist, so false-SUPPORTED rate cannot be established | Evaluation | Complete claim-level bilingual review and second-adjudicator review for disputed safety cases. |
+| Locked normal-RAG vs CRAG comparison | Phase 6D review evidence is complete under the revised protocol, but no locked corpus or 60-case execution exists | Evaluation/tooling | Review the lock-readiness report, explicitly align the legacy lock gate with the revised checksum-bound protocol, then lock once without fabricating human adjudications. |
+| Verifier safety | Gold labels are primary-human reviewed and machine-audited, but no locked model outputs exist, so runtime false-SUPPORTED rate is not yet established | Evaluation | Lock the audited corpus, then measure the Phase 6E verifier confusion matrix and false-SUPPORTED rate. |
 | Correction effectiveness | Provisional EN improved; provisional AR did not trigger and failed Recall@6 | Model/retrieval | On a new calibration case, inspect Arabic grader semantics and one Arabic rewrite prompt; do not alter release safety rules. |
 | Target-machine GPU viability | 4B GPU warm-up crashed with `0xc0000005` | Runtime/hardware | Test a pinned newer Ollama build or llama.cpp with the same GGUF; retain CPU-only as the stable control. |
 | Target-machine latency | One correction path took 163.5 seconds; too little locked data exists for p95 | Runtime/hardware | After runtime stability, run the full untouched calibration set; test 2B only if p95 exceeds 180 seconds. |
@@ -51,3 +51,22 @@ No deterministic test result, calibration output, or successful local generation
   adjudication exporter correctly refuses to run until the 40 mandatory cases have primary records.
 - The full deterministic suite now passes 27 tests. No acceptance benchmark was run and no locked corpus
   version was created.
+
+## Phase 6D final review status — 2026-08-20
+
+- Final review protocol: **60/60 Primary Human Review + 40/40 Independent Machine-Assisted
+  Safety/Dispute Audit**.
+- **No independent second-human adjudication was performed.** Official adjudication records remain
+  empty; machine review is documented as audit evidence, not as human adjudication.
+- The final source-level audit confirmed all 40 safety/dispute-sensitive cases. Ten contradiction cases
+  remain intentionally unresolved at the fact level because both anchored statements are valid and no
+  version, date, authority, supersession, or precedence rule resolves them. Their `CONTRADICTORY` labels
+  are therefore confirmed.
+- Corpus integrity remains clean: 60 cases, 60 sources, expected bilingual/category/outcome distribution,
+  six current revision-2 cases, matching source and anchor hashes, no stale or duplicate primary-review
+  records, and no runtime/gold-data leakage.
+- Phase 6D is complete under the revised protocol and the corpus is semantically eligible for locking.
+  The current lock implementation still enforces the superseded second-human gate; that tooling must be
+  explicitly aligned with the revised checksum-bound protocol before the official lock is created. Its
+  requirements must not be bypassed and human adjudication records must not be manufactured.
+- No corpus lock or Phase 6E benchmark was run.
