@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "crag-gold-v1-final-machine-safety-audit",
+  "review_protocol": "primary_human_plus_machine_audit",
+  "corpus_id": "crag-bilingual-gold",
+  "audited_corpus_version": "crag-gold-v1-draft",
+  "audit_type": "independent_machine_assisted_safety_dispute",
+  "audited_at": "2026-08-20T21:21:57.8848223+03:00",
+  "human_adjudication_performed": false,
+  "official_adjudication_count": 0,
+  "required_case_ids": [
+    "ar-conflict-01", "ar-conflict-02", "ar-conflict-03", "ar-conflict-04", "ar-conflict-05",
+    "ar-injection-01", "ar-injection-02", "ar-injection-03", "ar-injection-04", "ar-injection-05",
+    "ar-partial-01", "ar-partial-02", "ar-partial-03", "ar-partial-04", "ar-partial-05",
+    "ar-unanswerable-01", "ar-unanswerable-02", "ar-unanswerable-03", "ar-unanswerable-04", "ar-unanswerable-05",
+    "en-conflict-01", "en-conflict-02", "en-conflict-03", "en-conflict-04", "en-conflict-05",
+    "en-injection-01", "en-injection-02", "en-injection-03", "en-injection-04", "en-injection-05",
+    "en-partial-01", "en-partial-02", "en-partial-03", "en-partial-04", "en-partial-05",
+    "en-unanswerable-01", "en-unanswerable-02", "en-unanswerable-03", "en-unanswerable-04", "en-unanswerable-05"
+  ],
+  "audited_case_ids": [
+    "ar-conflict-01", "ar-conflict-02", "ar-conflict-03", "ar-conflict-04", "ar-conflict-05",
+    "ar-injection-01", "ar-injection-02", "ar-injection-03", "ar-injection-04", "ar-injection-05",
+    "ar-partial-01", "ar-partial-02", "ar-partial-03", "ar-partial-04", "ar-partial-05",
+    "ar-unanswerable-01", "ar-unanswerable-02", "ar-unanswerable-03", "ar-unanswerable-04", "ar-unanswerable-05",
+    "en-conflict-01", "en-conflict-02", "en-conflict-03", "en-conflict-04", "en-conflict-05",
+    "en-injection-01", "en-injection-02", "en-injection-03", "en-injection-04", "en-injection-05",
+    "en-partial-01", "en-partial-02", "en-partial-03", "en-partial-04", "en-partial-05",
+    "en-unanswerable-01", "en-unanswerable-02", "en-unanswerable-03", "en-unanswerable-04", "en-unanswerable-05"
+  ],
+  "semantically_valid_case_ids": [
+    "ar-conflict-01", "ar-conflict-02", "ar-conflict-03", "ar-conflict-04", "ar-conflict-05",
+    "ar-injection-01", "ar-injection-02", "ar-injection-03", "ar-injection-04", "ar-injection-05",
+    "ar-partial-01", "ar-partial-02", "ar-partial-03", "ar-partial-04", "ar-partial-05",
+    "ar-unanswerable-01", "ar-unanswerable-02", "ar-unanswerable-03", "ar-unanswerable-04", "ar-unanswerable-05",
+    "en-conflict-01", "en-conflict-02", "en-conflict-03", "en-conflict-04", "en-conflict-05",
+    "en-injection-01", "en-injection-02", "en-injection-03", "en-injection-04", "en-injection-05",
+    "en-partial-01", "en-partial-02", "en-partial-03", "en-partial-04", "en-partial-05",
+    "en-unanswerable-01", "en-unanswerable-02", "en-unanswerable-03", "en-unanswerable-04", "en-unanswerable-05"
+  ],
+  "intentional_contradiction_case_ids": [
+    "ar-conflict-01", "ar-conflict-02", "ar-conflict-03", "ar-conflict-04", "ar-conflict-05",
+    "en-conflict-01", "en-conflict-02", "en-conflict-03", "en-conflict-04", "en-conflict-05"
+  ],
+  "unresolved_corpus_defect_case_ids": [],
+  "genuine_defect_case_ids": [],
+  "false_supported_case_ids": [],
+  "integrity_errors": [],
+  "leakage_detected": false,
+  "protected_content_sha256": {
+    "gold_case_semantics": "ce27c5f11254eeed6e085462d23d5a1a7f6633e5b8f4812f42a69e3ad7d1ee71",
+    "source_manifest": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+    "runtime_manifest": "ef7f879f5593173228e2e50320f8ba8a9819eefa6ea18aec121bd6c4c0b85c19",
+    "primary_review_manifest": "32399df18abc0fd5a9521e1d8ed928a91369981c71816a65a4c3d1d1b144b96a",
+    "adjudication_manifest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_files": "773b756a050d2b962387996864f7ed45034d3ae04fe457e443edeff66f7cbd30"
+  },
+  "methodology": "60/60 Primary Human Review + 40/40 Independent Machine-Assisted Safety/Dispute Audit",
+  "limitation": "No independent second-human adjudication was performed."
+}

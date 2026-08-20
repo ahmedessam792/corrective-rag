@@ -48,8 +48,9 @@ Audit the draft:
 .venv\Scripts\python.exe validate.py corpus-audit
 ```
 
-The expected pre-review verdict is `Corpus complete but human approval pending`. Reviewers must inspect
-the rendered files. Prepare six ten-case bilingual primary packets, grouped by category, with:
+Before review, the expected verdict is `Corpus complete but human approval pending`. The current reviewed
+draft reports `Corpus review complete and lock-eligible`. Reviewers must inspect the rendered files. Prepare
+six ten-case bilingual primary packets, grouped by category, with:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-prepare-review-batches --stage primary
@@ -79,8 +80,8 @@ their response templates were not completed or applied.
 
 The final Phase 6D protocol is **60/60 Primary Human Review + 40/40 Independent Machine-Assisted
 Safety/Dispute Audit**. **No independent second-human adjudication was performed.** Machine findings are
-preserved only under `evaluation/pre-review/`; they are not human review records and `adjudications.jsonl`
-remains empty.
+preserved in the narrative reports under `evaluation/pre-review/` and in the structured, checksum-bound
+`machine_audit.json`; they are not human review records and `adjudications.jsonl` remains empty.
 
 If a future corpus version uses second-human adjudication, apply the same preserved 60 primary records
 together with those human adjudication records, then regenerate the runtime boundary:
@@ -93,9 +94,10 @@ together with those human adjudication records, then regenerate the runtime boun
 ```
 
 The 2026-08-20 final audit found all 40 safety/dispute cases semantically valid with zero corpus defects,
-false `SUPPORTED` labels, integrity errors, or leakage. The draft is eligible for locking under the revised
-protocol. The current lock implementation still enforces the older second-human-record requirement, so it
-must be explicitly aligned with the checksum-bound machine-audit protocol before this command is run:
+false `SUPPORTED` labels, integrity errors, or leakage. The draft explicitly selects
+`primary_human_plus_machine_audit` and is lock-eligible. This protocol requires exact protected-content
+hashes and zero official human adjudication records; the alternative `two_human_adjudication` protocol still
+requires independent second-human confirmation. After explicit approval to create the release, run:
 
 ```powershell
 .venv\Scripts\python.exe validate.py corpus-lock `

@@ -10,6 +10,7 @@ from crag.corpus import (
     MANDATORY_ADJUDICATION_CATEGORIES,
     RUNTIME_ALLOWED_KEYS,
     AdjudicationRecord,
+    ReviewProtocol,
     ReviewRecord,
     apply_review_records,
     audit_corpus,
@@ -24,17 +25,24 @@ from crag.corpus import (
 CORPUS = Path("evaluation/corpora/crag-gold-v1-draft")
 
 
-def test_draft_corpus_is_complete_but_not_human_approved() -> None:
+def test_draft_corpus_is_lock_eligible_under_revised_protocol() -> None:
     audit = audit_corpus(CORPUS, verify_documents=True)
     assert audit.total_cases == EXPECTED_CASES
     assert audit.structurally_complete_cases == EXPECTED_CASES
-    assert audit.approved_cases == 0
+    assert audit.review_protocol == ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT
+    assert audit.approved_cases == EXPECTED_CASES
+    assert audit.primary_reviewed_cases == EXPECTED_CASES
+    assert audit.machine_audited_cases == 40
+    assert audit.adjudicated_cases == 0
     assert not audit.missing_sources
     assert not audit.integrity_errors
     assert not audit.case_errors
-    assert len(audit.unresolved_reviews) == EXPECTED_CASES
-    assert len(audit.unresolved_adjudications) == 40
-    assert audit.verdict == "Corpus complete but human approval pending"
+    assert not audit.unresolved_reviews
+    assert not audit.unresolved_adjudications
+    assert not audit.unresolved_machine_audits
+    assert not audit.protocol_errors
+    assert audit.lock_eligible
+    assert audit.verdict == "Corpus review complete and lock-eligible"
     assert not audit.benchmark_ready
 
 
@@ -51,9 +59,35 @@ def test_runtime_manifest_contains_only_runtime_inputs() -> None:
         assert forbidden not in serialized
 
 
-def test_lock_refuses_unapproved_gold(tmp_path: Path) -> None:
-    with pytest.raises(RuntimeError, match="explicit human approval"):
-        lock_corpus(CORPUS, tmp_path / "crag-gold-v1")
+def test_lock_refuses_missing_primary_review(tmp_path: Path) -> None:
+    copied = tmp_path / "corpus"
+    shutil.copytree(CORPUS, copied)
+    reviews = (copied / "reviews.jsonl").read_text(encoding="utf-8").splitlines()
+    (copied / "reviews.jsonl").write_text("\n".join(reviews[1:]) + "\n", encoding="utf-8")
+    audit = audit_corpus(copied, verify_documents=False)
+    assert not audit.lock_eligible
+    assert len(audit.unresolved_reviews) == 1
+    with pytest.raises(RuntimeError, match="selected review protocol"):
+        lock_corpus(copied, tmp_path / "crag-gold-v1")
+
+
+def test_machine_audit_protocol_refuses_missing_or_stale_evidence(tmp_path: Path) -> None:
+    missing = tmp_path / "missing"
+    shutil.copytree(CORPUS, missing)
+    (missing / "machine_audit.json").unlink()
+    missing_audit = audit_corpus(missing, verify_documents=False)
+    assert not missing_audit.lock_eligible
+    assert "machine audit manifest is missing" in missing_audit.protocol_errors
+
+    stale = tmp_path / "stale"
+    shutil.copytree(CORPUS, stale)
+    reviews = stale / "reviews.jsonl"
+    records = [json.loads(line) for line in reviews.read_text(encoding="utf-8").splitlines()]
+    records[0]["notes"] += " Stale post-audit edit."
+    reviews.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
+    stale_audit = audit_corpus(stale, verify_documents=False)
+    assert not stale_audit.lock_eligible
+    assert any("checksums are stale" in error for error in stale_audit.protocol_errors)
 
 
 def test_audit_detects_source_tampering(tmp_path: Path) -> None:
@@ -63,6 +97,19 @@ def test_audit_detects_source_tampering(tmp_path: Path) -> None:
     source.write_bytes(source.read_bytes() + b"tampered")
     audit = audit_corpus(copied, verify_documents=False)
     assert any("source hash mismatch" in error for error in audit.integrity_errors)
+    assert not audit.lock_eligible
+
+
+def test_audit_detects_anchor_hash_tampering(tmp_path: Path) -> None:
+    copied = tmp_path / "corpus"
+    shutil.copytree(CORPUS, copied)
+    manifest = copied / "gold_cases.jsonl"
+    records = [json.loads(line) for line in manifest.read_text(encoding="utf-8").splitlines()]
+    records[0]["gold_evidence"][0]["normalized_text_sha256"] = "0" * 64
+    manifest.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
+    audit = audit_corpus(copied, verify_documents=False)
+    assert any("passage hash is invalid" in error for errors in audit.case_errors.values() for error in errors)
+    assert not audit.lock_eligible
 
 
 def test_audit_rejects_gold_leakage_in_runtime_manifest(tmp_path: Path) -> None:
@@ -74,6 +121,35 @@ def test_audit_rejects_gold_leakage_in_runtime_manifest(tmp_path: Path) -> None:
     runtime.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
     audit = audit_corpus(copied, verify_documents=False)
     assert any("runtime line 1" in error for error in audit.integrity_errors)
+    assert not audit.lock_eligible
+
+
+def test_unsupported_review_protocol_is_rejected(tmp_path: Path) -> None:
+    copied = tmp_path / "corpus"
+    shutil.copytree(CORPUS, copied)
+    metadata_path = copied / "corpus.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["review_protocol"] = "automatic_approval"
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+    with pytest.raises(ValueError, match="review_protocol"):
+        audit_corpus(copied, verify_documents=False)
+
+
+def test_two_human_protocol_still_requires_independent_adjudication(tmp_path: Path) -> None:
+    copied = tmp_path / "strict"
+    shutil.copytree(CORPUS, copied)
+    metadata, _, _, _, _ = load_corpus(copied)
+    metadata.review_protocol = ReviewProtocol.TWO_HUMAN_ADJUDICATION
+    metadata.machine_audit_manifest = None
+    metadata.review_methodology = None
+    metadata.review_limitations = []
+    (copied / "corpus.json").write_text(metadata.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    audit = audit_corpus(copied, verify_documents=False)
+    assert audit.approved_cases == 20
+    assert len(audit.unresolved_adjudications) == 40
+    assert audit.machine_audited_cases == 0
+    assert not audit.protocol_errors
+    assert not audit.lock_eligible
 
 
 def test_arabic_questions_and_evidence_are_nfc() -> None:
@@ -117,14 +193,22 @@ def test_primary_review_batches_are_complete_and_do_not_mutate_corpus(tmp_path: 
 
 
 def test_adjudication_batches_refuse_to_preempt_primary_review(tmp_path: Path) -> None:
+    copied = tmp_path / "draft-without-primary-records"
+    shutil.copytree(CORPUS, copied)
+    (copied / "reviews.jsonl").write_text("", encoding="utf-8")
     with pytest.raises(RuntimeError, match="completed primary records"):
-        prepare_adjudication_review_batches(CORPUS, tmp_path / "adjudication")
+        prepare_adjudication_review_batches(copied, tmp_path / "adjudication")
 
 
 def test_complete_human_records_can_be_applied(tmp_path: Path) -> None:
     copied = tmp_path / "draft"
     shutil.copytree(CORPUS, copied)
-    _, cases, _, _, _ = load_corpus(copied)
+    metadata, cases, _, _, _ = load_corpus(copied)
+    metadata.review_protocol = ReviewProtocol.TWO_HUMAN_ADJUDICATION
+    metadata.machine_audit_manifest = None
+    metadata.review_methodology = None
+    metadata.review_limitations = []
+    (copied / "corpus.json").write_text(metadata.model_dump_json(indent=2) + "\n", encoding="utf-8")
     reviews = []
     adjudications = []
     for case in cases:
@@ -156,7 +240,8 @@ def test_complete_human_records_can_be_applied(tmp_path: Path) -> None:
                     adjudicated_outcome=case.expected_outcome,
                     approved_anchor_ids=anchor_ids,
                     adjudicated_correction_required=case.correction.required,
-                    decision="approved",
+                    confidence="high",
+                    decision="confirm_primary",
                     notes="Independent test adjudication.",
                     adjudicated_at="2026-08-13T13:00:00+00:00",
                 )
@@ -167,11 +252,28 @@ def test_complete_human_records_can_be_applied(tmp_path: Path) -> None:
     adjudication_path.write_text("".join(record.model_dump_json() + "\n" for record in adjudications), encoding="utf-8")
     applied = apply_review_records(copied, review_path, adjudication_path)
     assert applied.approved_cases == EXPECTED_CASES
+    assert applied.adjudicated_cases == 40
+    assert applied.lock_eligible
     output = prepare_adjudication_review_batches(copied, tmp_path / "adjudication")
     index = json.loads((output / "index.json").read_text(encoding="utf-8"))
     assert index["case_count"] == 40
     assert len(index["batches"]) == 4
     assert all((output / f"{batch['batch_id']}.md").is_file() for batch in index["batches"])
+    assert all(len(batch["case_ids"]) == 10 for batch in index["batches"])
+    for batch in index["batches"]:
+        packet = json.loads((output / f"{batch['batch_id']}.packet.json").read_text(encoding="utf-8"))
+        assert all(case["adjudication_requirement"] for case in packet["cases"])
+        assert all("primary_review" in case for case in packet["cases"])
+        assert "Codex" not in (output / f"{batch['batch_id']}.md").read_text(encoding="utf-8")
+        templates = [
+            json.loads(line)
+            for line in (output / f"{batch['batch_id']}.adjudications.template.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+        assert all("confidence" in record for record in templates)
+        assert all("CONFIRM_PRIMARY" in record["decision"] for record in templates)
 
 
 def test_locked_checksum_tamper_detection(tmp_path: Path) -> None:

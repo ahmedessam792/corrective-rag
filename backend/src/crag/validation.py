@@ -1005,7 +1005,7 @@ def _report_command(args: argparse.Namespace) -> int:
 def _corpus_audit_command(args: argparse.Namespace) -> int:
     audit = audit_corpus(args.corpus)
     print(json.dumps(audit.model_dump(), ensure_ascii=False, indent=2))
-    return 0 if audit.benchmark_ready else 2
+    return 0 if audit.lock_eligible else 2
 
 
 def _corpus_compile_command(args: argparse.Namespace) -> int:

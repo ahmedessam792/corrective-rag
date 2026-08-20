@@ -48,7 +48,8 @@ bilingual consistency, and leakage boundaries.
 
 Machine findings are evaluator-only audit evidence, not human adjudications. They must not populate
 `adjudications.jsonl`, use a human reviewer identity, or be described as second-human approval. The detailed
-advisory report and final lock-readiness audit are preserved under `evaluation/pre-review/`.
+reports are preserved under `evaluation/pre-review/`; the structured, checksum-bound lock evidence is
+`machine_audit.json` inside the corpus version.
 
 The previously generated adjudication packets remain available if a future release elects to require a
 second human. They are not completed records for this corpus version.
@@ -62,6 +63,8 @@ verification, or generation inputs. `corpus-apply-reviews` rejects placeholder o
 
 The 2026-08-20 audit found 40/40 safety/dispute cases semantically valid, zero corpus defects, zero false
 `SUPPORTED` labels, zero integrity errors, and no leakage. Phase 6D is complete under the revised protocol.
-The corpus is eligible for locking under that protocol, but the legacy lock guard still requires explicit
-second-human records. Do not bypass it or fabricate records: align the lock gate with the documented,
-checksum-bound machine audit in a separate explicit step, then verify the locked checksum set before Phase 6E.
+The corpus is eligible for locking under the explicit `primary_human_plus_machine_audit` protocol. The lock
+guard validates all 60 primary records, exact 40-case audit coverage, the documented second-human limitation,
+empty official adjudications, frozen distribution/revisions, source and anchor integrity, runtime isolation,
+and the audit's protected-content hashes. The separate `two_human_adjudication` protocol retains the stricter
+independent-human gate. No lock has been created and Phase 6E has not started.

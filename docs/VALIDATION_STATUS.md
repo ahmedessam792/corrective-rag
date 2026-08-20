@@ -29,7 +29,7 @@ Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z
 
 | Gate | Exact evidence | Classification | Smallest next action |
 |---|---|---|---|
-| Locked normal-RAG vs CRAG comparison | Phase 6D review evidence is complete under the revised protocol, but no locked corpus or 60-case execution exists | Evaluation/tooling | Review the lock-readiness report, explicitly align the legacy lock gate with the revised checksum-bound protocol, then lock once without fabricating human adjudications. |
+| Locked normal-RAG vs CRAG comparison | Phase 6D review evidence is complete and the aligned gate reports the draft lock-eligible, but no locked corpus or 60-case execution exists | Evaluation | Review the pre-lock report, explicitly authorize the one-time lock, then execute Phase 6E separately. |
 | Verifier safety | Gold labels are primary-human reviewed and machine-audited, but no locked model outputs exist, so runtime false-SUPPORTED rate is not yet established | Evaluation | Lock the audited corpus, then measure the Phase 6E verifier confusion matrix and false-SUPPORTED rate. |
 | Correction effectiveness | Provisional EN improved; provisional AR did not trigger and failed Recall@6 | Model/retrieval | On a new calibration case, inspect Arabic grader semantics and one Arabic rewrite prompt; do not alter release safety rules. |
 | Target-machine GPU viability | 4B GPU warm-up crashed with `0xc0000005` | Runtime/hardware | Test a pinned newer Ollama build or llama.cpp with the same GGUF; retain CPU-only as the stable control. |
@@ -65,8 +65,8 @@ No deterministic test result, calibration output, or successful local generation
 - Corpus integrity remains clean: 60 cases, 60 sources, expected bilingual/category/outcome distribution,
   six current revision-2 cases, matching source and anchor hashes, no stale or duplicate primary-review
   records, and no runtime/gold-data leakage.
-- Phase 6D is complete under the revised protocol and the corpus is semantically eligible for locking.
-  The current lock implementation still enforces the superseded second-human gate; that tooling must be
-  explicitly aligned with the revised checksum-bound protocol before the official lock is created. Its
-  requirements must not be bypassed and human adjudication records must not be manufactured.
+- Phase 6D is complete under the revised protocol. The explicit `primary_human_plus_machine_audit` gate now
+  binds the audit to the exact gold semantics, sources, runtime manifest, primary reviews, and empty official
+  adjudication manifest. The independent `two_human_adjudication` path remains strict.
+- The draft is lock-eligible, but the official lock still requires separate user authorization.
 - No corpus lock or Phase 6E benchmark was run.

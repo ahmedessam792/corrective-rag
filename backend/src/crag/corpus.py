@@ -16,8 +16,9 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from crag.ingestion import chunk_blocks, parse_document
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 EXPECTED_CASES = 60
+EXPECTED_SOURCES = 60
 EXPECTED_LANGUAGE_COUNTS = {"en": 30, "ar": 30}
 EXPECTED_CATEGORY_COUNTS = {
     "answerable": 10,
@@ -46,6 +47,30 @@ MANDATORY_ADJUDICATION_CATEGORIES = {
     "partial",
     "contradictory",
     "prompt_injection",
+}
+EXPECTED_OUTCOME_COUNTS = {
+    "SUPPORTED": 30,
+    "PARTIAL": 10,
+    "INSUFFICIENT": 10,
+    "CONTRADICTORY": 10,
+}
+EXPECTED_CORRECTION_REQUIRED = 10
+EXPECTED_REVISION_2_CASE_IDS = {
+    "en-correction-02",
+    "ar-correction-02",
+    "en-correction-04",
+    "ar-correction-04",
+    "en-unanswerable-02",
+    "ar-unanswerable-02",
+}
+NO_SECOND_HUMAN_LIMITATION = "No independent second-human adjudication was performed."
+MACHINE_AUDIT_BINDING_KEYS = {
+    "gold_case_semantics",
+    "source_manifest",
+    "runtime_manifest",
+    "primary_review_manifest",
+    "adjudication_manifest",
+    "source_files",
 }
 REVIEW_BATCH_CATEGORY_ORDER = (
     "answerable",
@@ -103,6 +128,11 @@ class ReviewState(StrEnum):
 class CorpusStatus(StrEnum):
     DRAFT = "draft"
     LOCKED = "locked"
+
+
+class ReviewProtocol(StrEnum):
+    TWO_HUMAN_ADJUDICATION = "two_human_adjudication"
+    PRIMARY_HUMAN_PLUS_MACHINE_AUDIT = "primary_human_plus_machine_audit"
 
 
 class SourceLocator(BaseModel):
@@ -252,7 +282,8 @@ class AdjudicationRecord(BaseModel):
     adjudicated_outcome: Outcome
     approved_anchor_ids: list[str]
     adjudicated_correction_required: bool
-    decision: Literal["approved", "changes_required"]
+    confidence: Literal["high", "medium", "low"]
+    decision: Literal["confirm_primary", "change_required", "unresolved"]
     notes: str = Field(min_length=1)
     adjudicated_at: str = Field(min_length=1)
 
@@ -263,6 +294,55 @@ class AdjudicationRecord(BaseModel):
         if parsed.tzinfo is None:
             raise ValueError("adjudicated_at must include a timezone")
         return value
+
+
+class MachineAuditEvidence(BaseModel):
+    schema_version: Literal["1.0"] = "1.0"
+    audit_id: str = Field(min_length=1)
+    review_protocol: ReviewProtocol
+    corpus_id: str = Field(min_length=1)
+    audited_corpus_version: str = Field(min_length=1)
+    audit_type: Literal["independent_machine_assisted_safety_dispute"]
+    audited_at: str = Field(min_length=1)
+    human_adjudication_performed: Literal[False]
+    official_adjudication_count: Literal[0]
+    required_case_ids: list[str]
+    audited_case_ids: list[str]
+    semantically_valid_case_ids: list[str]
+    intentional_contradiction_case_ids: list[str]
+    unresolved_corpus_defect_case_ids: list[str]
+    genuine_defect_case_ids: list[str]
+    false_supported_case_ids: list[str]
+    integrity_errors: list[str]
+    leakage_detected: bool
+    protected_content_sha256: dict[str, str]
+    methodology: str = Field(min_length=1)
+    limitation: str = Field(min_length=1)
+
+    @field_validator("audited_at")
+    @classmethod
+    def validate_audited_at(cls, value: str) -> str:
+        parsed = datetime.fromisoformat(value)
+        if parsed.tzinfo is None:
+            raise ValueError("audited_at must include a timezone")
+        return value
+
+    @model_validator(mode="after")
+    def validate_method(self) -> MachineAuditEvidence:
+        if self.review_protocol != ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT:
+            raise ValueError("machine audit evidence requires the machine-audit review protocol")
+        if self.limitation != NO_SECOND_HUMAN_LIMITATION:
+            raise ValueError("machine audit evidence must state the second-human limitation exactly")
+        for field_name in (
+            "required_case_ids",
+            "audited_case_ids",
+            "semantically_valid_case_ids",
+            "intentional_contradiction_case_ids",
+        ):
+            values = getattr(self, field_name)
+            if len(values) != len(set(values)):
+                raise ValueError(f"{field_name} contains duplicate case IDs")
+        return self
 
 
 class CorpusMetadata(BaseModel):
@@ -278,8 +358,25 @@ class CorpusMetadata(BaseModel):
     review_manifest: str = "reviews.jsonl"
     adjudication_manifest: str = "adjudications.jsonl"
     fixture_root: str = "fixtures"
+    review_protocol: ReviewProtocol = ReviewProtocol.TWO_HUMAN_ADJUDICATION
+    machine_audit_manifest: str | None = None
+    review_methodology: str | None = None
+    review_limitations: list[str] = Field(default_factory=list)
     parent_version: str | None = None
     aggregate_sha256: str | None = None
+
+    @model_validator(mode="after")
+    def validate_review_protocol(self) -> CorpusMetadata:
+        if self.review_protocol == ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT:
+            if not self.machine_audit_manifest:
+                raise ValueError("machine-audit review protocol requires machine_audit_manifest")
+            if not self.review_methodology:
+                raise ValueError("machine-audit review protocol requires review_methodology")
+            if NO_SECOND_HUMAN_LIMITATION not in self.review_limitations:
+                raise ValueError("machine-audit review protocol must document the second-human limitation")
+        elif self.machine_audit_manifest:
+            raise ValueError("two-human review protocol cannot use machine audit evidence as adjudication")
+        return self
 
 
 @dataclass(frozen=True, slots=True)
@@ -287,32 +384,45 @@ class CorpusAudit:
     corpus_id: str
     version: str
     status: str
+    review_protocol: str
     total_cases: int
     structurally_complete_cases: int
     approved_cases: int
+    primary_reviewed_cases: int
+    machine_audited_cases: int
+    adjudicated_cases: int
     missing_sources: tuple[str, ...]
     unresolved_reviews: tuple[str, ...]
     unresolved_adjudications: tuple[str, ...]
+    unresolved_machine_audits: tuple[str, ...]
+    protocol_errors: tuple[str, ...]
     integrity_errors: tuple[str, ...]
     case_errors: dict[str, list[str]]
 
     @property
-    def benchmark_ready(self) -> bool:
+    def lock_eligible(self) -> bool:
         return (
-            self.status == CorpusStatus.LOCKED
-            and self.total_cases == EXPECTED_CASES
+            self.total_cases == EXPECTED_CASES
             and self.approved_cases == EXPECTED_CASES
             and not self.missing_sources
             and not self.unresolved_reviews
             and not self.unresolved_adjudications
+            and not self.unresolved_machine_audits
+            and not self.protocol_errors
             and not self.integrity_errors
             and not self.case_errors
         )
 
     @property
+    def benchmark_ready(self) -> bool:
+        return self.status == CorpusStatus.LOCKED and self.lock_eligible
+
+    @property
     def verdict(self) -> str:
         if self.benchmark_ready:
             return "Gold corpus locked and benchmark-ready"
+        if self.lock_eligible:
+            return "Corpus review complete and lock-eligible"
         if self.missing_sources:
             return "Corpus blocked by fixture/source issues"
         if self.total_cases == EXPECTED_CASES and self.structurally_complete_cases == EXPECTED_CASES:
@@ -321,6 +431,7 @@ class CorpusAudit:
 
     def model_dump(self) -> dict[str, Any]:
         result = asdict(self)
+        result["lock_eligible"] = self.lock_eligible
         result["benchmark_ready"] = self.benchmark_ready
         result["verdict"] = self.verdict
         return result
@@ -389,6 +500,130 @@ def load_corpus(
     )
 
 
+def _sha256_json(value: Any) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _gold_case_semantics(cases: list[GoldCase]) -> str:
+    workflow_fields = {
+        "human_review_state",
+        "reviewer_id",
+        "review_record_id",
+        "adjudication_record_id",
+        "uncertainty",
+    }
+    payload = [
+        case.model_dump(mode="json", exclude=workflow_fields)
+        for case in sorted(cases, key=lambda item: item.id)
+    ]
+    return _sha256_json(payload)
+
+
+def _source_files_sha256(root: Path, sources: list[SourceRecord]) -> str:
+    entries = []
+    for source in sorted(sources, key=lambda item: item.source_id):
+        path = root / source.relative_path
+        entries.append(
+            {
+                "source_id": source.source_id,
+                "sha256": file_sha256(path) if path.is_file() else "missing",
+            }
+        )
+    return _sha256_json(entries)
+
+
+def _machine_audit_bindings(
+    root: Path,
+    metadata: CorpusMetadata,
+    cases: list[GoldCase],
+    sources: list[SourceRecord],
+) -> dict[str, str]:
+    def manifest_hash(name: str) -> str:
+        path = root / name
+        return file_sha256(path) if path.is_file() else "missing"
+
+    return {
+        "gold_case_semantics": _gold_case_semantics(cases),
+        "source_manifest": manifest_hash(metadata.source_manifest),
+        "runtime_manifest": manifest_hash(metadata.runtime_manifest),
+        "primary_review_manifest": manifest_hash(metadata.review_manifest),
+        "adjudication_manifest": manifest_hash(metadata.adjudication_manifest),
+        "source_files": _source_files_sha256(root, sources),
+    }
+
+
+def _validate_machine_audit_evidence(
+    root: Path,
+    metadata: CorpusMetadata,
+    cases: list[GoldCase],
+    sources: list[SourceRecord],
+    reviews: list[ReviewRecord],
+    adjudications: list[AdjudicationRecord],
+) -> tuple[set[str], list[str]]:
+    if metadata.review_protocol != ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT:
+        return set(), []
+    errors: list[str] = []
+    manifest = Path(metadata.machine_audit_manifest or "")
+    if manifest.is_absolute() or ".." in manifest.parts:
+        return set(), ["machine audit manifest must be a corpus-relative path"]
+    path = root / manifest
+    if not path.is_file():
+        return set(), ["machine audit manifest is missing"]
+    try:
+        evidence = MachineAuditEvidence.model_validate_json(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return set(), [f"machine audit manifest is invalid: {type(exc).__name__}"]
+    required_ids = {case.id for case in cases if case.category in MANDATORY_ADJUDICATION_CATEGORIES}
+    contradiction_ids = {case.id for case in cases if case.category == "contradictory"}
+    if evidence.corpus_id != metadata.corpus_id:
+        errors.append("machine audit corpus ID does not match")
+    permitted_versions = {metadata.version}
+    if metadata.status == CorpusStatus.LOCKED and metadata.parent_version:
+        permitted_versions.add(metadata.parent_version)
+    if evidence.audited_corpus_version not in permitted_versions:
+        errors.append("machine audit corpus version is stale")
+    if set(evidence.required_case_ids) != required_ids:
+        errors.append("machine audit required-case scope does not match the frozen safety/dispute set")
+    if set(evidence.audited_case_ids) != required_ids:
+        errors.append("machine audit does not cover all required safety/dispute cases")
+    if set(evidence.semantically_valid_case_ids) != required_ids:
+        errors.append("machine audit does not confirm every required case as semantically valid")
+    if set(evidence.intentional_contradiction_case_ids) != contradiction_ids:
+        errors.append("machine audit intentional-contradiction scope does not match the corpus")
+    if evidence.unresolved_corpus_defect_case_ids or evidence.genuine_defect_case_ids:
+        errors.append("machine audit reports unresolved or genuine corpus defects")
+    if evidence.false_supported_case_ids:
+        errors.append("machine audit reports false SUPPORTED cases")
+    if evidence.integrity_errors:
+        errors.append("machine audit reports integrity errors")
+    if evidence.leakage_detected:
+        errors.append("machine audit reports runtime/gold leakage")
+    if adjudications or evidence.official_adjudication_count != len(adjudications):
+        errors.append("machine-audit protocol requires zero official human adjudication records")
+    if evidence.methodology != metadata.review_methodology:
+        errors.append("machine audit methodology does not match corpus metadata")
+    if evidence.limitation not in metadata.review_limitations:
+        errors.append("machine audit limitation is not preserved in corpus metadata")
+    if set(evidence.protected_content_sha256) != MACHINE_AUDIT_BINDING_KEYS:
+        errors.append("machine audit protected-content binding set is incomplete or unsupported")
+    else:
+        current_bindings = _machine_audit_bindings(root, metadata, cases, sources)
+        stale = sorted(
+            name
+            for name in MACHINE_AUDIT_BINDING_KEYS
+            if evidence.protected_content_sha256[name] != current_bindings[name]
+        )
+        if stale:
+            errors.append(f"machine audit protected-content checksums are stale: {stale}")
+    if reviews:
+        audit_time = datetime.fromisoformat(evidence.audited_at)
+        latest_review = max(datetime.fromisoformat(review.reviewed_at) for review in reviews)
+        if audit_time < latest_review:
+            errors.append("machine audit predates the latest primary review")
+    return set(evidence.audited_case_ids) if not errors else set(), errors
+
+
 def _anchor_error(root: Path, source: SourceRecord, anchor: EvidenceAnchor) -> str | None:
     path = root / source.relative_path
     if not path.is_file():
@@ -440,6 +675,8 @@ def _case_errors(case: GoldCase, source_ids: set[str]) -> list[str]:
             errors.append(f"anchor {anchor.id} references a source outside the case")
         if set(anchor.claim_ids) - claim_ids:
             errors.append(f"anchor {anchor.id} references an unknown claim")
+        if text_sha256(anchor.exact_text) != anchor.normalized_text_sha256:
+            errors.append(f"anchor {anchor.id} passage hash is invalid")
     if case.category == "unanswerable":
         if case.gold_evidence:
             errors.append("unanswerable case must not contain positive gold evidence")
@@ -468,16 +705,21 @@ def _case_errors(case: GoldCase, source_ids: set[str]) -> list[str]:
 
 
 def _validate_runtime_manifest(
-    root: Path, metadata: CorpusMetadata, source_by_id: dict[str, SourceRecord]
+    root: Path,
+    metadata: CorpusMetadata,
+    source_by_id: dict[str, SourceRecord],
+    cases: list[GoldCase],
 ) -> list[str]:
     path = root / metadata.runtime_manifest
     if not path.is_file():
         return ["runtime manifest is missing"]
     errors = []
+    records: list[dict[str, Any]] = []
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
         payload = json.loads(line)
+        records.append(payload)
         keys = set(payload)
         if keys != RUNTIME_ALLOWED_KEYS:
             errors.append(f"runtime line {line_number} has disallowed or missing keys: {sorted(keys)}")
@@ -488,6 +730,29 @@ def _validate_runtime_manifest(
                 errors.append(f"runtime line {line_number} contains disallowed source metadata")
             if source.get("source_id") not in source_by_id:
                 errors.append(f"runtime line {line_number} references an unknown source")
+    if len(records) != len(cases):
+        errors.append(f"runtime manifest expected {len(cases)} cases, found {len(records)}")
+    runtime_by_id = {record.get("id"): record for record in records}
+    if len(runtime_by_id) != len(records):
+        errors.append("runtime manifest case IDs are not unique")
+    for case in cases:
+        record = runtime_by_id.get(case.id)
+        if not record:
+            errors.append(f"runtime manifest is missing case {case.id}")
+            continue
+        if record.get("question") != case.question:
+            errors.append(f"runtime question does not match gold case {case.id}")
+        expected_sources = [
+            {
+                "source_id": source_id,
+                "relative_path": source_by_id[source_id].relative_path,
+                "sha256": source_by_id[source_id].sha256,
+            }
+            for source_id in case.source_ids
+            if source_id in source_by_id
+        ]
+        if record.get("sources") != expected_sources:
+            errors.append(f"runtime source linkage does not match gold case {case.id}")
     return errors
 
 
@@ -505,16 +770,32 @@ def audit_corpus(root: Path, *, verify_lock: bool = True, verify_documents: bool
     if len(normalized_questions) != len(set(normalized_questions)):
         integrity_errors.append("duplicate normalized questions exist within a language")
     source_ids = [source.source_id for source in sources]
+    if len(sources) != EXPECTED_SOURCES:
+        integrity_errors.append(f"expected {EXPECTED_SOURCES} sources, found {len(sources)}")
     if len(source_ids) != len(set(source_ids)):
         integrity_errors.append("source IDs are not unique")
     language_counts = Counter(case.language for case in cases)
     category_counts = Counter(case.category for case in cases)
+    outcome_counts = Counter(case.expected_outcome.value for case in cases)
+    correction_required_count = sum(case.correction.required for case in cases)
     if len(cases) != EXPECTED_CASES:
         integrity_errors.append(f"expected {EXPECTED_CASES} cases, found {len(cases)}")
     if dict(language_counts) != EXPECTED_LANGUAGE_COUNTS:
         integrity_errors.append(f"language distribution is {dict(language_counts)}")
     if dict(category_counts) != EXPECTED_CATEGORY_COUNTS:
         integrity_errors.append(f"category distribution is {dict(category_counts)}")
+    if dict(outcome_counts) != EXPECTED_OUTCOME_COUNTS:
+        integrity_errors.append(f"outcome distribution is {dict(outcome_counts)}")
+    if correction_required_count != EXPECTED_CORRECTION_REQUIRED:
+        integrity_errors.append(f"expected {EXPECTED_CORRECTION_REQUIRED} correction-required cases")
+    revision_2_ids = {case.id for case in cases if case.provenance.case_revision == 2}
+    invalid_revision_ids = {
+        case.id
+        for case in cases
+        if case.provenance.case_revision != (2 if case.id in EXPECTED_REVISION_2_CASE_IDS else 1)
+    }
+    if revision_2_ids != EXPECTED_REVISION_2_CASE_IDS or invalid_revision_ids:
+        integrity_errors.append("case revision metadata does not match the frozen revision map")
     source_by_id = {source.source_id: source for source in sources}
     seen_hashes: dict[str, str] = {}
     for source in sources:
@@ -591,11 +872,30 @@ def audit_corpus(root: Path, *, verify_lock: bool = True, verify_documents: bool
                 errors.append("correction bridge and target must resolve to separate candidate chunks")
         if errors:
             case_errors[case.id] = errors
+    if len({record.case_id for record in reviews}) != len(reviews):
+        integrity_errors.append("primary review records contain duplicate case IDs")
+    if len({record.review_id for record in reviews}) != len(reviews):
+        integrity_errors.append("primary review record IDs are not unique")
+    if len({record.case_id for record in adjudications}) != len(adjudications):
+        integrity_errors.append("adjudication records contain duplicate case IDs")
+    if len({record.adjudication_id for record in adjudications}) != len(adjudications):
+        integrity_errors.append("adjudication record IDs are not unique")
+    unknown_review_cases = {record.case_id for record in reviews} - set(ids)
+    unknown_adjudication_cases = {record.case_id for record in adjudications} - set(ids)
+    if unknown_review_cases:
+        integrity_errors.append(f"primary reviews reference unknown cases: {sorted(unknown_review_cases)}")
+    if unknown_adjudication_cases:
+        integrity_errors.append(f"adjudications reference unknown cases: {sorted(unknown_adjudication_cases)}")
     review_by_case = {record.case_id: record for record in reviews}
     adjudication_by_case = {record.case_id: record for record in adjudications}
+    machine_audited_ids, protocol_errors = _validate_machine_audit_evidence(
+        root, metadata, cases, sources, reviews, adjudications
+    )
     unresolved_reviews: list[str] = []
     unresolved_adjudications: list[str] = []
+    unresolved_machine_audits: list[str] = []
     approved_cases = 0
+    primary_reviewed_cases = 0
     for case in cases:
         mandatory = case.category in MANDATORY_ADJUDICATION_CATEGORIES
         review = review_by_case.get(case.id)
@@ -611,10 +911,23 @@ def audit_corpus(root: Path, *, verify_lock: bool = True, verify_documents: bool
         ):
             case_errors.setdefault(case.id, []).append("primary review does not match current gold data")
             continue
-        needs_adjudication = mandatory or review.decision == "adjudication_required" or review.confidence != "high"
-        if needs_adjudication:
+        if case.reviewer_id != review.reviewer_id or case.review_record_id != review.review_id:
+            case_errors.setdefault(case.id, []).append("case does not reference its current primary review")
+            continue
+        primary_reviewed_cases += 1
+        needs_independent_check = (
+            mandatory or review.decision == "adjudication_required" or review.confidence != "high"
+        )
+        if (
+            metadata.review_protocol == ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT
+            and needs_independent_check
+        ):
+            if case.id not in machine_audited_ids:
+                unresolved_machine_audits.append(case.id)
+                continue
+        elif needs_independent_check:
             adjudication = adjudication_by_case.get(case.id)
-            if not adjudication or adjudication.decision != "approved":
+            if not adjudication or adjudication.decision != "confirm_primary":
                 unresolved_adjudications.append(case.id)
                 continue
             if (
@@ -629,11 +942,17 @@ def audit_corpus(root: Path, *, verify_lock: bool = True, verify_documents: bool
                     "adjudication does not approve the current independent gold data"
                 )
                 continue
-        if case.human_review_state in {ReviewState.APPROVED, ReviewState.LOCKED}:
+        acceptable_states = {ReviewState.APPROVED, ReviewState.LOCKED}
+        if (
+            metadata.review_protocol == ReviewProtocol.PRIMARY_HUMAN_PLUS_MACHINE_AUDIT
+            and case.id in machine_audited_ids
+        ):
+            acceptable_states.add(ReviewState.ADJUDICATION_REQUIRED)
+        if case.human_review_state in acceptable_states:
             approved_cases += 1
         else:
             case_errors.setdefault(case.id, []).append("human_review_state is not approved or locked")
-    integrity_errors.extend(_validate_runtime_manifest(root, metadata, source_by_id))
+    integrity_errors.extend(_validate_runtime_manifest(root, metadata, source_by_id, cases))
     if metadata.status == CorpusStatus.LOCKED and verify_lock:
         integrity_errors.extend(verify_locked_corpus(root))
     structurally_complete = sum(
@@ -645,12 +964,18 @@ def audit_corpus(root: Path, *, verify_lock: bool = True, verify_documents: bool
         corpus_id=metadata.corpus_id,
         version=metadata.version,
         status=metadata.status,
+        review_protocol=metadata.review_protocol,
         total_cases=len(cases),
         structurally_complete_cases=structurally_complete,
         approved_cases=approved_cases,
+        primary_reviewed_cases=primary_reviewed_cases,
+        machine_audited_cases=len(machine_audited_ids),
+        adjudicated_cases=sum(record.decision == "confirm_primary" for record in adjudications),
         missing_sources=tuple(sorted(missing_sources)),
         unresolved_reviews=tuple(sorted(unresolved_reviews)),
         unresolved_adjudications=tuple(sorted(unresolved_adjudications)),
+        unresolved_machine_audits=tuple(sorted(unresolved_machine_audits)),
+        protocol_errors=tuple(sorted(set(protocol_errors))),
         integrity_errors=tuple(sorted(set(integrity_errors))),
         case_errors=case_errors,
     )
@@ -783,8 +1108,7 @@ def _primary_markdown(
         for anchor in case.gold_evidence:
             lines.extend(
                 [
-                    f"- `{anchor.id}` — source `{anchor.source_id}`, role `{anchor.role}`, "
-                    f"{_markdown_locator(anchor)}",
+                    f"- `{anchor.id}` — source `{anchor.source_id}`, role `{anchor.role}`, {_markdown_locator(anchor)}",
                     f"  - Exact passage: “{anchor.exact_text}”",
                     f"  - Passage SHA-256: `{anchor.normalized_text_sha256}`",
                     f"  - Claims: {', '.join(f'`{claim_id}`' for claim_id in anchor.claim_ids)}",
@@ -838,6 +1162,7 @@ def _adjudication_markdown(
     ]
     for case in cases:
         review = review_by_case[case.id]
+        mandatory_reason = _adjudication_requirement(case, review)
         lines.extend(
             [
                 f"## {case.id} primary record",
@@ -851,6 +1176,7 @@ def _adjudication_markdown(
                 f"- Confidence: `{review.confidence}`",
                 f"- Uncertainty: {'; '.join(review.uncertainty) if review.uncertainty else 'None recorded'}",
                 f"- Notes: {review.notes}",
+                f"- Why adjudication is mandatory: {mandatory_reason}",
                 "",
                 "Adjudicator response (complete the companion JSONL record):",
                 "",
@@ -858,12 +1184,37 @@ def _adjudication_markdown(
                 "- Adjudicated outcome:",
                 "- Approved anchor IDs:",
                 "- Adjudicated correction required:",
-                "- Decision: `approved` / `changes_required`",
+                "- Confidence: `high` / `medium` / `low`",
+                "- Decision: `confirm_primary` / `change_required` / `unresolved`",
                 "- Notes:",
                 "",
             ]
         )
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _adjudication_requirement(case: GoldCase, review: ReviewRecord) -> str:
+    reasons = {
+        "unanswerable": (
+            "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final."
+        ),
+        "partial": (
+            "Independent safety review must confirm both the supported portion and whole-source absence "
+            "of the missing portion before a bounded PARTIAL answer is final."
+        ),
+        "contradictory": (
+            "Independent safety review must verify both conflicting source passages and confirm that the "
+            "listed sources provide no authoritative resolution."
+        ),
+        "prompt_injection": (
+            "Independent safety review must judge the label from factual evidence only and treat embedded "
+            "document instructions as untrusted content."
+        ),
+    }
+    reason = reasons.get(case.category, "Independent review is required by the corpus safety protocol.")
+    if review.confidence != "high" or review.uncertainty:
+        reason += " The primary record also contains confidence or uncertainty requiring independent resolution."
+    return reason
 
 
 def _write_review_artifact(path: Path, content: str) -> None:
@@ -991,8 +1342,7 @@ def prepare_adjudication_review_batches(root: Path, output: Path | None = None) 
         raise RuntimeError("Adjudication packets require completed primary records for: " + ", ".join(missing))
     if unresolved_changes:
         raise RuntimeError(
-            "Cases requiring proposal changes must be revised and re-reviewed first: "
-            + ", ".join(unresolved_changes)
+            "Cases requiring proposal changes must be revised and re-reviewed first: " + ", ".join(unresolved_changes)
         )
     output = output or root / "review-batches" / "adjudication"
     _prepare_batch_directory(output)
@@ -1014,6 +1364,7 @@ def prepare_adjudication_review_batches(root: Path, output: Path | None = None) 
             review = review_by_case[case.id]
             payload = _review_case_payload(case, source_by_id)
             payload["primary_review"] = review.model_dump(mode="json")
+            payload["adjudication_requirement"] = _adjudication_requirement(case, review)
             packet_cases.append(payload)
             response_records.append(
                 {
@@ -1027,7 +1378,8 @@ def prepare_adjudication_review_batches(root: Path, output: Path | None = None) 
                     "adjudicated_outcome": "REPLACE",
                     "approved_anchor_ids": ["REPLACE-WITH-APPROVED-ANCHOR-IDS"],
                     "adjudicated_correction_required": "REPLACE-WITH-TRUE-OR-FALSE",
-                    "decision": "REPLACE",
+                    "confidence": "REPLACE-WITH-HIGH-MEDIUM-OR-LOW",
+                    "decision": "REPLACE-WITH-CONFIRM_PRIMARY-CHANGE_REQUIRED-OR-UNRESOLVED",
                     "notes": "REPLACE after independent source inspection.",
                     "adjudicated_at": "REPLACE-WITH-TIMEZONE-AWARE-ISO-8601",
                 }
@@ -1124,7 +1476,7 @@ def apply_review_records(root: Path, reviews_path: Path, adjudications_path: Pat
             raise ValueError(f"Adjudicator must be independent from the primary reviewer: {case.id}")
         if adjudication.review_id != review.review_id or adjudication.original_outcome != review.reviewed_outcome:
             raise ValueError(f"Adjudication does not preserve the original primary decision: {case.id}")
-        if adjudication.decision == "approved" and (
+        if adjudication.decision == "confirm_primary" and (
             adjudication.adjudicated_outcome != case.expected_outcome
             or adjudication.adjudicated_correction_required != case.correction.required
             or set(adjudication.approved_anchor_ids) != {anchor.id for anchor in case.gold_evidence}
@@ -1156,7 +1508,7 @@ def apply_review_records(root: Path, reviews_path: Path, adjudications_path: Pat
         if adjudication:
             case.adjudication_record_id = adjudication.adjudication_id
             case.human_review_state = (
-                ReviewState.APPROVED if adjudication.decision == "approved" else ReviewState.ADJUDICATED
+                ReviewState.APPROVED if adjudication.decision == "confirm_primary" else ReviewState.ADJUDICATED
             )
         else:
             case.human_review_state = ReviewState.APPROVED
@@ -1218,11 +1570,15 @@ def lock_corpus(draft_root: Path, locked_root: Path) -> Path:
         or prelock_case_errors
     ):
         raise RuntimeError(f"Corpus is not structurally complete: {json.dumps(audit.model_dump(), ensure_ascii=False)}")
-    if audit.approved_cases != EXPECTED_CASES or audit.unresolved_reviews or audit.unresolved_adjudications:
-        raise RuntimeError("Lock refused: all 60 cases require explicit human approval and required adjudication.")
+    if not audit.lock_eligible:
+        raise RuntimeError(
+            "Lock refused: the selected review protocol is incomplete or its evidence is invalid: "
+            f"{json.dumps(audit.model_dump(), ensure_ascii=False)}"
+        )
     shutil.copytree(draft_root, locked_root)
     metadata, cases, _, _, _ = load_corpus(locked_root)
     metadata.status = CorpusStatus.LOCKED
+    metadata.parent_version = metadata.version
     metadata.version = locked_root.name
     for case in cases:
         case.human_review_state = ReviewState.LOCKED
@@ -1255,6 +1611,15 @@ def lock_corpus(draft_root: Path, locked_root: Path) -> Path:
     if not report["benchmark_ready"]:
         raise RuntimeError(f"Locked corpus failed final readiness audit: {json.dumps(report, ensure_ascii=False)}")
     report["checksum_verification"] = {"valid": True, "errors": []}
+    report["review_methodology"] = {
+        "protocol": metadata.review_protocol,
+        "methodology": metadata.review_methodology,
+        "limitations": metadata.review_limitations,
+        "machine_audit_manifest": metadata.machine_audit_manifest,
+        "official_adjudication_count": len(
+            _load_jsonl(locked_root / metadata.adjudication_manifest, AdjudicationRecord)
+        ),
+    }
     (locked_root / "integrity-report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )

@@ -49,11 +49,13 @@ No case failed the audit, so there is no non-clean-case table.
 ## Lock readiness
 
 The corpus is semantically and structurally eligible for locking **under the revised review protocol**.
-The existing `corpus-lock` implementation still enforces the superseded requirement for 40 official
-second-human adjudication records and will correctly refuse the current draft. That tooling mismatch is
-not a corpus defect, but it must be resolved explicitly before running the lock command. The lock gate must
-recognize and checksum this revised protocol and its machine-audit evidence without fabricating human
-adjudications or weakening source, integrity, review, or leakage checks.
+The lock gate now recognizes the explicit `primary_human_plus_machine_audit` identity and validates a
+structured audit manifest bound to the exact gold semantics, source and runtime manifests, primary reviews,
+empty adjudication manifest, and physical source bytes. The separate `two_human_adjudication` protocol still
+requires independent human confirmation and does not accept machine evidence as adjudication.
+
+The aligned gate reports 60 primary-reviewed, 40 machine-audited, zero human-adjudicated cases and finds the
+draft lock-eligible. No safety, integrity, source, anchor, distribution, revision, or leakage check was removed.
 
 No lock was attempted and Phase 6E was not started.
 

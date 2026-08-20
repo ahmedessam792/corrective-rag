@@ -25,6 +25,11 @@ are evaluator-only evidence and must never be represented as human adjudication 
 records. The 2026-08-20 lock-readiness audit found all 40 cases semantically valid, including ten intentional
 contradictions for which the sources provide no explicit precedence or supersession rule.
 
+The corpus metadata identifies this method as `primary_human_plus_machine_audit` and points to a structured
+machine-audit manifest. Lock eligibility checks that manifest against canonical gold semantics, source and
+runtime manifests, all source bytes, primary reviews, and the empty adjudication manifest. The alternative
+`two_human_adjudication` protocol remains available and continues to require independent human records.
+
 ## Gate sequence
 
 1. Freeze a reproducible Git commit and record the dependency locks and machine snapshot.
