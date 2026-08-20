@@ -57,7 +57,9 @@ requires independent human confirmation and does not accept machine evidence as 
 The aligned gate reports 60 primary-reviewed, 40 machine-audited, zero human-adjudicated cases and finds the
 draft lock-eligible. No safety, integrity, source, anchor, distribution, revision, or leakage check was removed.
 
-No lock was attempted and Phase 6E was not started.
+Following explicit authorization, the official workflow created immutable version `crag-gold-v1`. Its aggregate
+SHA-256 is `2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054`; checksum verification and the locked
+deep audit passed with `benchmark_ready: true`. Phase 6E was not started.
 
 ## Verdict
 

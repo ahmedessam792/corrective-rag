@@ -111,6 +111,9 @@ Any legitimate post-lock change requires a new version;
 previous locked versions stay intact. Review packets and unfilled templates are excluded from the locked
 release; signed review and adjudication records remain. Do not run the final benchmark against the draft corpus.
 
+Current Phase 6D release: `evaluation/corpora/crag-gold-v1`, checksum-verified and benchmark-ready. Phase 6E
+has not started.
+
 Audit readiness:
 
 ```powershell

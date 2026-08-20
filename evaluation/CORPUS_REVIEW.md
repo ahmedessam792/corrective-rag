@@ -67,4 +67,5 @@ The corpus is eligible for locking under the explicit `primary_human_plus_machin
 guard validates all 60 primary records, exact 40-case audit coverage, the documented second-human limitation,
 empty official adjudications, frozen distribution/revisions, source and anchor integrity, runtime isolation,
 and the audit's protected-content hashes. The separate `two_human_adjudication` protocol retains the stricter
-independent-human gate. No lock has been created and Phase 6E has not started.
+independent-human gate. The official workflow created checksum-verified version `crag-gold-v1`; Phase 6E has
+not started.

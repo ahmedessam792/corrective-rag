@@ -7,8 +7,8 @@ Models: `qwen3.5:4b-q4_K_M` (`2a654d98e6fb…`) and `qwen3-embedding:0.6b` (`ac6
 
 This is the only current MVP verdict. It is not an acceptance result. Phase 6D corpus review is complete
 under the documented revised protocol: all 60 cases received primary human review and all 40
-safety/dispute-sensitive cases received an independent machine-assisted audit. No locked corpus exists
-and Phase 6E has not started.
+safety/dispute-sensitive cases received an independent machine-assisted audit. Immutable corpus version
+`crag-gold-v1` is locked and checksum-verified; Phase 6E has not started.
 
 ## Evidence collected
 
@@ -29,7 +29,7 @@ Raw local artifacts are under ignored `.evaluation-runs/`. Run `20260813T161839Z
 
 | Gate | Exact evidence | Classification | Smallest next action |
 |---|---|---|---|
-| Locked normal-RAG vs CRAG comparison | Phase 6D review evidence is complete and the aligned gate reports the draft lock-eligible, but no locked corpus or 60-case execution exists | Evaluation | Review the pre-lock report, explicitly authorize the one-time lock, then execute Phase 6E separately. |
+| Locked normal-RAG vs CRAG comparison | `crag-gold-v1` is locked and benchmark-ready, but no 60-case execution exists | Evaluation | Execute Phase 6E separately against the immutable locked inputs. |
 | Verifier safety | Gold labels are primary-human reviewed and machine-audited, but no locked model outputs exist, so runtime false-SUPPORTED rate is not yet established | Evaluation | Lock the audited corpus, then measure the Phase 6E verifier confusion matrix and false-SUPPORTED rate. |
 | Correction effectiveness | Provisional EN improved; provisional AR did not trigger and failed Recall@6 | Model/retrieval | On a new calibration case, inspect Arabic grader semantics and one Arabic rewrite prompt; do not alter release safety rules. |
 | Target-machine GPU viability | 4B GPU warm-up crashed with `0xc0000005` | Runtime/hardware | Test a pinned newer Ollama build or llama.cpp with the same GGUF; retain CPU-only as the stable control. |
@@ -68,5 +68,6 @@ No deterministic test result, calibration output, or successful local generation
 - Phase 6D is complete under the revised protocol. The explicit `primary_human_plus_machine_audit` gate now
   binds the audit to the exact gold semantics, sources, runtime manifest, primary reviews, and empty official
   adjudication manifest. The independent `two_human_adjudication` path remains strict.
-- The draft is lock-eligible, but the official lock still requires separate user authorization.
-- No corpus lock or Phase 6E benchmark was run.
+- The official workflow created and verified immutable version `crag-gold-v1`; its aggregate SHA-256 is
+  `2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054`.
+- The locked deep audit reports `benchmark_ready: true`. Phase 6E was not started.

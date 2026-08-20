@@ -1,0 +1,23 @@
+{
+  "corpus_id": "crag-bilingual-gold",
+  "version": "crag-gold-v1",
+  "schema_version": "1.1",
+  "status": "locked",
+  "created_at": "2026-08-13T18:06:11.091665+00:00",
+  "description": "Draft bilingual 60-case acceptance corpus. Gold metadata is AI-assisted and requires explicit human review.",
+  "case_manifest": "gold_cases.jsonl",
+  "source_manifest": "sources.jsonl",
+  "runtime_manifest": "runtime_cases.jsonl",
+  "review_manifest": "reviews.jsonl",
+  "adjudication_manifest": "adjudications.jsonl",
+  "fixture_root": "fixtures",
+  "review_protocol": "primary_human_plus_machine_audit",
+  "machine_audit_manifest": "machine_audit.json",
+  "review_methodology": "60/60 Primary Human Review + 40/40 Independent Machine-Assisted Safety/Dispute Audit",
+  "review_limitations": [
+    "No independent second-human adjudication was performed.",
+    "Machine-assisted audit evidence is not human adjudication and must not be represented as such."
+  ],
+  "parent_version": "crag-gold-v1-draft",
+  "aggregate_sha256": "2b3d18599f225c83193d0ea4aa46742ffede5bdeccc521a858fc162c31c44054"
+}

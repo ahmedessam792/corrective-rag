@@ -1,0 +1,36 @@
+{
+  "corpus_id": "crag-bilingual-gold",
+  "version": "crag-gold-v1",
+  "status": "locked",
+  "review_protocol": "primary_human_plus_machine_audit",
+  "total_cases": 60,
+  "structurally_complete_cases": 60,
+  "approved_cases": 60,
+  "primary_reviewed_cases": 60,
+  "machine_audited_cases": 40,
+  "adjudicated_cases": 0,
+  "missing_sources": [],
+  "unresolved_reviews": [],
+  "unresolved_adjudications": [],
+  "unresolved_machine_audits": [],
+  "protocol_errors": [],
+  "integrity_errors": [],
+  "case_errors": {},
+  "lock_eligible": true,
+  "benchmark_ready": true,
+  "verdict": "Gold corpus locked and benchmark-ready",
+  "checksum_verification": {
+    "valid": true,
+    "errors": []
+  },
+  "review_methodology": {
+    "protocol": "primary_human_plus_machine_audit",
+    "methodology": "60/60 Primary Human Review + 40/40 Independent Machine-Assisted Safety/Dispute Audit",
+    "limitations": [
+      "No independent second-human adjudication was performed.",
+      "Machine-assisted audit evidence is not human adjudication and must not be represented as such."
+    ],
+    "machine_audit_manifest": "machine_audit.json",
+    "official_adjudication_count": 0
+  }
+}

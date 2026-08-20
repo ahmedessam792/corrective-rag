@@ -1,0 +1,30 @@
+{
+  "corpus_mutation_after_lock": "forbidden",
+  "runtime_input_allowlist": [
+    "id",
+    "question",
+    "sources"
+  ],
+  "evaluator_only": [
+    "language",
+    "category",
+    "expected_outcome",
+    "gold_evidence",
+    "gold_claims",
+    "correction",
+    "reviews",
+    "adjudications",
+    "uncertainty",
+    "notes"
+  ],
+  "frozen_before_phase_6e": [
+    "model tags and model hashes",
+    "prompts and schema versions",
+    "retrieval and reranking parameters",
+    "support thresholds",
+    "correction policy and maximum corrections",
+    "generation parameters and seed",
+    "dependency lock and Git commit"
+  ],
+  "acceptance_run_policy": "Run the verified locked corpus once with counterbalanced pipeline order. Do not rerun unfavorable cases or tune after viewing acceptance outputs."
+}
