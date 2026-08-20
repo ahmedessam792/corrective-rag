@@ -1,0 +1,502 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "adjudication",
+  "batch_id": "adjudication-03-unanswerable",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "e164eacaf10a63507a47cd7603d72fc3ff18e81549994194d88068ef53e57d6d",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "review_manifest_sha256": "32399df18abc0fd5a9521e1d8ed928a91369981c71816a65a4c3d1d1b144b96a",
+  "cases": [
+    {
+      "case_id": "ar-unanswerable-01",
+      "language": "ar",
+      "category": "unanswerable",
+      "question": "ما عنوان منزل المؤلف؟",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "عنوان منزل المؤلف غير موجود.",
+        "claims": [
+          {
+            "id": "ar-unanswerable-01-claim-1",
+            "text": "عنوان منزل المؤلف غير موجود.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-study-a-v1",
+          "title": "دراسة سير العمل السريري",
+          "relative_path": "fixtures/ar-study-a.pdf",
+          "document_version": "1.0",
+          "sha256": "40b1c84029a26d611875f9ddc1314485030ff9c7e22a2638d1899d6457c50377"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-unanswerable-01-r1",
+        "case_id": "ar-unanswerable-01",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-unanswerable-02",
+      "language": "ar",
+      "category": "unanswerable",
+      "question": "ما النتائج التشغيلية المسجلة في الربع التالي لفترة التقرير؟",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.",
+        "claims": [
+          {
+            "id": "ar-unanswerable-02-claim-1",
+            "text": "النتائج التشغيلية للربع التالي لفترة التقرير غير موجودة.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-report-a-v1",
+          "title": "تقرير العمليات ربع السنوي",
+          "relative_path": "fixtures/ar-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "f8401cfaf9b2a36e2a9ac93f5770aa87e460a8336e4af5c866b9243e681a3dee"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-unanswerable-02-r2",
+        "case_id": "ar-unanswerable-02",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-unanswerable-03",
+      "language": "ar",
+      "category": "unanswerable",
+      "question": "أي مورد تم اختياره؟",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "المورد المختار غير مذكور.",
+        "claims": [
+          {
+            "id": "ar-unanswerable-03-claim-1",
+            "text": "المورد المختار غير مذكور.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-policy-a-v1",
+          "title": "سياسة العمل المرن",
+          "relative_path": "fixtures/ar-policy-a.pdf",
+          "document_version": "1.0",
+          "sha256": "aab21646c8e263d5e289e401e4979134d22b3c625bca8de88fbbb3317682c74f"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-unanswerable-03-r1",
+        "case_id": "ar-unanswerable-03",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-unanswerable-04",
+      "language": "ar",
+      "category": "unanswerable",
+      "question": "ما كلمة المرور السرية المطلوبة؟",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "لا توجد كلمة مرور سرية في المصدر.",
+        "claims": [
+          {
+            "id": "ar-unanswerable-04-claim-1",
+            "text": "لا توجد كلمة مرور سرية في المصدر.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-security-a-v1",
+          "title": "ضابط مفاتيح التشفير",
+          "relative_path": "fixtures/ar-security-a.pdf",
+          "document_version": "1.0",
+          "sha256": "0ad8cf88e2bc806bed628d7dd2e3e4deee49c320b4a1ee14bd8c8db9a7625438"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-unanswerable-04-r1",
+        "case_id": "ar-unanswerable-04",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-unanswerable-05",
+      "language": "ar",
+      "category": "unanswerable",
+      "question": "ما قيمة المؤشر في العام المقبل؟",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "قيمة المؤشر للعام المقبل غير موجودة.",
+        "claims": [
+          {
+            "id": "ar-unanswerable-05-claim-1",
+            "text": "قيمة المؤشر للعام المقبل غير موجودة.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-report-a-v1",
+          "title": "تقرير العمليات ربع السنوي",
+          "relative_path": "fixtures/ar-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "f8401cfaf9b2a36e2a9ac93f5770aa87e460a8336e4af5c866b9243e681a3dee"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-unanswerable-05-r1",
+        "case_id": "ar-unanswerable-05",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-unanswerable-01",
+      "language": "en",
+      "category": "unanswerable",
+      "question": "What is the author's home address?",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "The author's home address is absent.",
+        "claims": [
+          {
+            "id": "en-unanswerable-01-claim-1",
+            "text": "The author's home address is absent.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-en-study-a-v1",
+          "title": "Clinical Workflow Study",
+          "relative_path": "fixtures/en-study-a.pdf",
+          "document_version": "1.0",
+          "sha256": "b950177f2fa41fb8f1976c7b28837243df8585e4df8da273da7415d349d63840"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-unanswerable-01-r1",
+        "case_id": "en-unanswerable-01",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-unanswerable-02",
+      "language": "en",
+      "category": "unanswerable",
+      "question": "What operational results were recorded in the quarter following the reporting period?",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "Operational results for the quarter following the reporting period are absent.",
+        "claims": [
+          {
+            "id": "en-unanswerable-02-claim-1",
+            "text": "Operational results for the quarter following the reporting period are absent.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-en-report-a-v1",
+          "title": "Quarterly Operations Report",
+          "relative_path": "fixtures/en-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "363278656ce67ad1a769377227a6bff7df3637428b97cb4cbc23324a9902310f"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-unanswerable-02-r2",
+        "case_id": "en-unanswerable-02",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-unanswerable-03",
+      "language": "en",
+      "category": "unanswerable",
+      "question": "Which vendor was selected?",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "The selected vendor is absent.",
+        "claims": [
+          {
+            "id": "en-unanswerable-03-claim-1",
+            "text": "The selected vendor is absent.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-en-policy-a-v1",
+          "title": "Flexible Work Policy",
+          "relative_path": "fixtures/en-policy-a.pdf",
+          "document_version": "1.0",
+          "sha256": "3494a51282883250be8e19b1f5744660e28343a110eab7f0f930f41e98dd3672"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-unanswerable-03-r1",
+        "case_id": "en-unanswerable-03",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-unanswerable-04",
+      "language": "en",
+      "category": "unanswerable",
+      "question": "What confidential password is required?",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "No confidential password is present.",
+        "claims": [
+          {
+            "id": "en-unanswerable-04-claim-1",
+            "text": "No confidential password is present.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-en-security-a-v1",
+          "title": "Cryptographic Key Control",
+          "relative_path": "fixtures/en-security-a.pdf",
+          "document_version": "1.0",
+          "sha256": "af6e6367f47406b86c8467e60cdfc8132af4b9825f1da74676d5fd12ab13d7f2"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-unanswerable-04-r1",
+        "case_id": "en-unanswerable-04",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-unanswerable-05",
+      "language": "en",
+      "category": "unanswerable",
+      "question": "What will the metric be next year?",
+      "proposal": {
+        "expected_outcome": "INSUFFICIENT",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": "all_case_sources",
+        "missing_information": "Next year's metric is absent.",
+        "claims": [
+          {
+            "id": "en-unanswerable-05-claim-1",
+            "text": "Next year's metric is absent.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": []
+      },
+      "sources": [
+        {
+          "source_id": "src-en-report-a-v1",
+          "title": "Quarterly Operations Report",
+          "relative_path": "fixtures/en-report-a.docx",
+          "document_version": "1.0",
+          "sha256": "363278656ce67ad1a769377227a6bff7df3637428b97cb4cbc23324a9902310f"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-unanswerable-05-r1",
+        "case_id": "en-unanswerable-05",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "INSUFFICIENT",
+        "approved_anchor_ids": [],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "Whole-source absence should be independently confirmed across every referenced source before treating these cases as definitively INSUFFICIENT."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual whole-source absence review; independent confirmation is required.",
+        "reviewed_at": "2026-08-17T22:44:03.2516437+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm whole-source absence before an INSUFFICIENT/refusal label is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    }
+  ]
+}

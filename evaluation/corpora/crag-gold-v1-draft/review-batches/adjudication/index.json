@@ -1,0 +1,72 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "adjudication",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "e164eacaf10a63507a47cd7603d72fc3ff18e81549994194d88068ef53e57d6d",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "review_manifest_sha256": "32399df18abc0fd5a9521e1d8ed928a91369981c71816a65a4c3d1d1b144b96a",
+  "case_count": 40,
+  "batches": [
+    {
+      "batch_id": "adjudication-03-unanswerable",
+      "case_ids": [
+        "ar-unanswerable-01",
+        "ar-unanswerable-02",
+        "ar-unanswerable-03",
+        "ar-unanswerable-04",
+        "ar-unanswerable-05",
+        "en-unanswerable-01",
+        "en-unanswerable-02",
+        "en-unanswerable-03",
+        "en-unanswerable-04",
+        "en-unanswerable-05"
+      ]
+    },
+    {
+      "batch_id": "adjudication-04-partial",
+      "case_ids": [
+        "ar-partial-01",
+        "ar-partial-02",
+        "ar-partial-03",
+        "ar-partial-04",
+        "ar-partial-05",
+        "en-partial-01",
+        "en-partial-02",
+        "en-partial-03",
+        "en-partial-04",
+        "en-partial-05"
+      ]
+    },
+    {
+      "batch_id": "adjudication-05-contradictory",
+      "case_ids": [
+        "ar-conflict-01",
+        "ar-conflict-02",
+        "ar-conflict-03",
+        "ar-conflict-04",
+        "ar-conflict-05",
+        "en-conflict-01",
+        "en-conflict-02",
+        "en-conflict-03",
+        "en-conflict-04",
+        "en-conflict-05"
+      ]
+    },
+    {
+      "batch_id": "adjudication-06-prompt-injection",
+      "case_ids": [
+        "ar-injection-01",
+        "ar-injection-02",
+        "ar-injection-03",
+        "ar-injection-04",
+        "ar-injection-05",
+        "en-injection-01",
+        "en-injection-02",
+        "en-injection-03",
+        "en-injection-04",
+        "en-injection-05"
+      ]
+    }
+  ]
+}

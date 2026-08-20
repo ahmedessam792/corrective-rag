@@ -1,0 +1,790 @@
+{
+  "packet_schema_version": "1.0",
+  "stage": "adjudication",
+  "batch_id": "adjudication-04-partial",
+  "corpus_id": "crag-bilingual-gold",
+  "corpus_version": "crag-gold-v1-draft",
+  "gold_manifest_sha256": "e164eacaf10a63507a47cd7603d72fc3ff18e81549994194d88068ef53e57d6d",
+  "source_manifest_sha256": "3e38522048e25e49b42ded778afbd270cd627385406e30954d0489675c99d5bb",
+  "review_manifest_sha256": "32399df18abc0fd5a9521e1d8ed928a91369981c71816a65a4c3d1d1b144b96a",
+  "cases": [
+    {
+      "case_id": "ar-partial-01",
+      "language": "ar",
+      "category": "partial",
+      "question": "اذكر الحد المعتمد وتاريخ تنفيذه.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "تاريخ التنفيذ غير مذكور.",
+        "claims": [
+          {
+            "id": "ar-partial-01-claim-1",
+            "text": "الحد المعتمد هو مئتان وخمسون سجلاً لكل عملية نقل.",
+            "expectation": "supported"
+          },
+          {
+            "id": "ar-partial-01-claim-2",
+            "text": "تاريخ التنفيذ غير مذكور.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-partial-01-ev-support",
+            "source_id": "src-ar-policy-c-v1",
+            "role": "necessary",
+            "exact_text": "الحد المعتمد للدفعة هو مئتان وخمسون سجلاً لكل عملية نقل.",
+            "normalized_text_sha256": "f9ef2b6630f73898684eb566747ccb9d5deea957eade7effe054bc4739dd68bb",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 61,
+              "char_end": 117
+            },
+            "claim_ids": [
+              "ar-partial-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-policy-c-v1",
+          "title": "حد النقل المعتمد",
+          "relative_path": "fixtures/ar-policy-c.pdf",
+          "document_version": "1.0",
+          "sha256": "580eda234c757c66f51caa071473d8d1d57d4f0f3d50f2796c950a279741e846"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-partial-01-r1",
+        "case_id": "ar-partial-01",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "ar-partial-01-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-partial-02",
+      "language": "ar",
+      "category": "partial",
+      "question": "من وافق على الإجراء ولماذا؟",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "سبب الاعتماد غير مسجل.",
+        "claims": [
+          {
+            "id": "ar-partial-02-claim-1",
+            "text": "اعتمد مدير العمليات الإجراء.",
+            "expectation": "supported"
+          },
+          {
+            "id": "ar-partial-02-claim-2",
+            "text": "سبب الاعتماد غير مسجل.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-partial-02-ev-support",
+            "source_id": "src-ar-process-c-v1",
+            "role": "necessary",
+            "exact_text": "اعتمد مدير العمليات الإجراء المعدل.",
+            "normalized_text_sha256": "0a3751a44a3aab15e43650b1bee538a5c560b43765e5cd5234a4e550cd997a5d",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 35
+            },
+            "claim_ids": [
+              "ar-partial-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-process-c-v1",
+          "title": "سجل اعتماد الإجراء",
+          "relative_path": "fixtures/ar-process-c.docx",
+          "document_version": "1.0",
+          "sha256": "e5216cdded2fd057fa82a563ed8d005fcd373c4eee8ee76d881d4b4420b473bb"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-partial-02-r1",
+        "case_id": "ar-partial-02",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "ar-partial-02-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-partial-03",
+      "language": "ar",
+      "category": "partial",
+      "question": "اذكر النتيجة المقاسة وحجم البيانات الخام.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "حجم البيانات الخام غير مذكور.",
+        "claims": [
+          {
+            "id": "ar-partial-03-claim-1",
+            "text": "كانت النتيجة المقاسة انخفاضاً بنسبة ثمانية عشر في المئة في الوسيط الزمني للانتظار.",
+            "expectation": "supported"
+          },
+          {
+            "id": "ar-partial-03-claim-2",
+            "text": "حجم البيانات الخام غير مذكور.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-partial-03-ev-support",
+            "source_id": "src-ar-study-b-v1",
+            "role": "necessary",
+            "exact_text": "حقق التدخل انخفاضاً بنسبة ثمانية عشر في المئة في الوسيط الزمني للانتظار.",
+            "normalized_text_sha256": "a9b19ecf08c6b0792b7f5666804d1b204b94767ee04b6afdb69489a53920a495",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 69,
+              "char_end": 141
+            },
+            "claim_ids": [
+              "ar-partial-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-study-b-v1",
+          "title": "دراسة خفض قوائم الانتظار",
+          "relative_path": "fixtures/ar-study-b.pdf",
+          "document_version": "1.0",
+          "sha256": "8dd0cedbcbf12b724a80388b6eeb77a18b456839709eca2da532a7f292440376"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-partial-03-r1",
+        "case_id": "ar-partial-03",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "ar-partial-03-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-partial-04",
+      "language": "ar",
+      "category": "partial",
+      "question": "صف الضابط وتكلفة شرائه.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "تكلفة الشراء غير مذكورة.",
+        "claims": [
+          {
+            "id": "ar-partial-04-claim-1",
+            "text": "الضابط هو مراجعة فصلية لصلاحيات الوصول المميز.",
+            "expectation": "supported"
+          },
+          {
+            "id": "ar-partial-04-claim-2",
+            "text": "تكلفة الشراء غير مذكورة.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-partial-04-ev-support",
+            "source_id": "src-ar-security-b-v1",
+            "role": "necessary",
+            "exact_text": "يتطلب الضابط مراجعة فصلية لصلاحيات الوصول المميز.",
+            "normalized_text_sha256": "70e15814d764652bf8ce85f2afc1f28179fdc9c5bb13d0c1b03e86b94f979a09",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "السجل المعتمد"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 49
+            },
+            "claim_ids": [
+              "ar-partial-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-security-b-v1",
+          "title": "ضابط مراجعة الوصول",
+          "relative_path": "fixtures/ar-security-b.docx",
+          "document_version": "1.0",
+          "sha256": "c2369ea670bd101cc22cabc4f135e13a2490833b30ebc3e91b44268f31aa2403"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-partial-04-r1",
+        "case_id": "ar-partial-04",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "ar-partial-04-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "ar-partial-05",
+      "language": "ar",
+      "category": "partial",
+      "question": "ما الذي تغير ومن طلب التغيير؟",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "الجهة الطالبة غير محددة.",
+        "claims": [
+          {
+            "id": "ar-partial-05-claim-1",
+            "text": "تغيرت مدة الاحتفاظ من ثلاث سنوات إلى خمس سنوات.",
+            "expectation": "supported"
+          },
+          {
+            "id": "ar-partial-05-claim-2",
+            "text": "الجهة الطالبة غير محددة.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ar-partial-05-ev-support",
+            "source_id": "src-ar-report-b-v1",
+            "role": "necessary",
+            "exact_text": "تغيرت مدة الاحتفاظ من ثلاث سنوات إلى خمس سنوات.",
+            "normalized_text_sha256": "c88e0e57daf4b0624790d0454b0bcaa6fd18a5409f4d4f45a5a7a082e195e112",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 69,
+              "char_end": 116
+            },
+            "claim_ids": [
+              "ar-partial-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-ar-report-b-v1",
+          "title": "إشعار تغيير مدة الاحتفاظ",
+          "relative_path": "fixtures/ar-report-b.pdf",
+          "document_version": "1.0",
+          "sha256": "84d7993f38b4c604f080227d265d72db03de5ab74c05d48adec76afa29c6ae60"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-ar-partial-05-r1",
+        "case_id": "ar-partial-05",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "ar-partial-05-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-partial-01",
+      "language": "en",
+      "category": "partial",
+      "question": "State the approved limit and its implementation date.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "The implementation date is not stated.",
+        "claims": [
+          {
+            "id": "en-partial-01-claim-1",
+            "text": "The approved limit is 250 records per transfer.",
+            "expectation": "supported"
+          },
+          {
+            "id": "en-partial-01-claim-2",
+            "text": "The implementation date is not stated.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-partial-01-ev-support",
+            "source_id": "src-en-policy-c-v1",
+            "role": "necessary",
+            "exact_text": "The approved batch limit is 250 records per transfer.",
+            "normalized_text_sha256": "7370faa2717de547d355399b2a3405d5ddd8dee7f7a20030e2aef51b78f3a82d",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 83,
+              "char_end": 136
+            },
+            "claim_ids": [
+              "en-partial-01-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-policy-c-v1",
+          "title": "Approved Transfer Limit",
+          "relative_path": "fixtures/en-policy-c.pdf",
+          "document_version": "1.0",
+          "sha256": "42e050d3a3d0c402d374c6aabb6018aa6110800d7d652760d9c5262c02b5e93c"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-partial-01-r1",
+        "case_id": "en-partial-01",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "en-partial-01-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-partial-02",
+      "language": "en",
+      "category": "partial",
+      "question": "Who approved the process and why?",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "The reason for approval is not recorded.",
+        "claims": [
+          {
+            "id": "en-partial-02-claim-1",
+            "text": "The Operations Director approved the process.",
+            "expectation": "supported"
+          },
+          {
+            "id": "en-partial-02-claim-2",
+            "text": "The reason for approval is not recorded.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-partial-02-ev-support",
+            "source_id": "src-en-process-c-v1",
+            "role": "necessary",
+            "exact_text": "The Operations Director approved the revised process.",
+            "normalized_text_sha256": "da977e7af2f4d09ec6f5224842408fb87813e2c42233a5843a69a4b96fcd9f60",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 53
+            },
+            "claim_ids": [
+              "en-partial-02-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-process-c-v1",
+          "title": "Process Approval Record",
+          "relative_path": "fixtures/en-process-c.docx",
+          "document_version": "1.0",
+          "sha256": "ba45fdb27641af57d9a945c6c0d844adb3645e84fa0fc496d579f72d24b2d51f"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-partial-02-r1",
+        "case_id": "en-partial-02",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "en-partial-02-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-partial-03",
+      "language": "en",
+      "category": "partial",
+      "question": "Give the measured result and the raw dataset size.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "The raw dataset size is not reported.",
+        "claims": [
+          {
+            "id": "en-partial-03-claim-1",
+            "text": "The measured result was an 18 percent reduction in median queue time.",
+            "expectation": "supported"
+          },
+          {
+            "id": "en-partial-03-claim-2",
+            "text": "The raw dataset size is not reported.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-partial-03-ev-support",
+            "source_id": "src-en-study-b-v1",
+            "role": "necessary",
+            "exact_text": "The intervention produced an 18 percent reduction in median queue time.",
+            "normalized_text_sha256": "17d0fdbf779095800544c000063707165b9d29c84be6f2fa21201e5cd0261d18",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 81,
+              "char_end": 152
+            },
+            "claim_ids": [
+              "en-partial-03-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-study-b-v1",
+          "title": "Queue Reduction Study",
+          "relative_path": "fixtures/en-study-b.pdf",
+          "document_version": "1.0",
+          "sha256": "1a517d44370f93d89717f9fca75c5b42ee17c733ec790695a95ae2e1343d6559"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-partial-03-r1",
+        "case_id": "en-partial-03",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "en-partial-03-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-partial-04",
+      "language": "en",
+      "category": "partial",
+      "question": "Describe the control and its procurement cost.",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "The procurement cost is not provided.",
+        "claims": [
+          {
+            "id": "en-partial-04-claim-1",
+            "text": "The control is a quarterly review of privileged access.",
+            "expectation": "supported"
+          },
+          {
+            "id": "en-partial-04-claim-2",
+            "text": "The procurement cost is not provided.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-partial-04-ev-support",
+            "source_id": "src-en-security-b-v1",
+            "role": "necessary",
+            "exact_text": "The control requires a quarterly review of privileged access.",
+            "normalized_text_sha256": "0978b4843d074424ca3120138dd870eec5740db5b01e9977d942e31994679445",
+            "relevance": 3,
+            "locator": {
+              "page": null,
+              "heading_path": [
+                "Approved record"
+              ],
+              "paragraph_start": 3,
+              "paragraph_end": 3,
+              "char_start": 0,
+              "char_end": 61
+            },
+            "claim_ids": [
+              "en-partial-04-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-security-b-v1",
+          "title": "Access Review Control",
+          "relative_path": "fixtures/en-security-b.docx",
+          "document_version": "1.0",
+          "sha256": "389b2d5a39153522c6ea2089323579079b7199e263b0d77e6631ce71bebd70b0"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-partial-04-r1",
+        "case_id": "en-partial-04",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "en-partial-04-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    },
+    {
+      "case_id": "en-partial-05",
+      "language": "en",
+      "category": "partial",
+      "question": "What changed and who requested the change?",
+      "proposal": {
+        "expected_outcome": "PARTIAL",
+        "correction_required": false,
+        "correction_rationale": null,
+        "correction_bridge_anchor_ids": [],
+        "correction_target_anchor_ids": [],
+        "absence_scope": null,
+        "missing_information": "The requester is not identified.",
+        "claims": [
+          {
+            "id": "en-partial-05-claim-1",
+            "text": "The retention period changed from three years to five years.",
+            "expectation": "supported"
+          },
+          {
+            "id": "en-partial-05-claim-2",
+            "text": "The requester is not identified.",
+            "expectation": "absent"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "en-partial-05-ev-support",
+            "source_id": "src-en-report-b-v1",
+            "role": "necessary",
+            "exact_text": "The retention period changed from three years to five years.",
+            "normalized_text_sha256": "c7ff4d3e4d1ed0af94496e0f774071bac9d1ec6f0958b5fd4508ebc4aa638cc3",
+            "relevance": 3,
+            "locator": {
+              "page": 1,
+              "heading_path": [],
+              "paragraph_start": null,
+              "paragraph_end": null,
+              "char_start": 83,
+              "char_end": 143
+            },
+            "claim_ids": [
+              "en-partial-05-claim-1"
+            ],
+            "alternative_group": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "src-en-report-b-v1",
+          "title": "Retention Change Notice",
+          "relative_path": "fixtures/en-report-b.pdf",
+          "document_version": "1.0",
+          "sha256": "672f394811927b09242789c637d2fdcaa4d6685d9d65201848ef9d563860314f"
+        }
+      ],
+      "primary_review": {
+        "review_id": "primary-reviewer-01-en-partial-05-r1",
+        "case_id": "en-partial-05",
+        "reviewer_id": "primary-reviewer-01",
+        "reviewer_role": "bilingual_primary",
+        "reviewed_outcome": "PARTIAL",
+        "approved_anchor_ids": [
+          "en-partial-05-ev-support"
+        ],
+        "reviewed_correction_required": false,
+        "confidence": "medium",
+        "uncertainty": [
+          "The supported portion is directly evidenced, but the missing portion should be independently confirmed as absent across the full referenced source before the PARTIAL label is treated as final."
+        ],
+        "decision": "approved",
+        "notes": "Approved with medium confidence after bilingual partial-evidence review; independent absence confirmation is required.",
+        "reviewed_at": "2026-08-18T00:41:28.2538389+03:00"
+      },
+      "adjudication_requirement": "Independent safety review must confirm both the supported portion and whole-source absence of the missing portion before a bounded PARTIAL answer is final. The primary record also contains confidence or uncertainty requiring independent resolution."
+    }
+  ]
+}
